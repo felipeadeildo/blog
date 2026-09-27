@@ -73,7 +73,7 @@ fish_add_path "/home/adeildo/.local/share/fnm/node-versions/v24.19.0/installatio
 1. The CachyOS config defines `fish_greeting` to run `fastfetch`. Defining it again, empty, wins because it comes later. Terminals open straight to the prompt now.
 2. The bun installer wrote these two lines.
 3. The AWS profile and region I use for work, so the `aws` CLI and Terraform pick them up without flags.
-4. Pi is installed with the `npm` from Node 24.19.0, so its folder goes on the `PATH` directly. If I ever switch the default Node version, this line needs to change too.
+4. Pi's installer wrote this one. It installs Pi with the `npm` from Node 24.19.0 and puts that folder on the `PATH`, so if I ever switch the default Node version, this line needs to change too.
 
 Everything else fish loads comes from `conf.d/`. That's where installers leave their files: fnm's lives there, and so does the fish wrapper for [claude-code-profiles](https://github.com/felipeadeildo/claude-code-profiles).
 

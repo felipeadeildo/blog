@@ -8,4 +8,4 @@ How my machine is put together, written down so I can rebuild it and so you can 
 
 - [desktop](desktop/index.md): the operating system, the compositor and the shell. CachyOS, niri and DankMaterialShell.
 - [workbench](workbench/index.md): the machine, the shell, the language tools, the editor and the apps I install everywhere.
-- [agents](agents/index.md): the AI coding harness I work with every day.
+- [agents](agents/index.md): Pi, the coding agent I use every day, every extension I run and what I still want from it.
