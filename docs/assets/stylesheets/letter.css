@@ -563,37 +563,6 @@
   }
 }
 
-.md-main__inner .md-content__inner:has(.whoami) {
-  max-width: 640px;
-}
-
-.whoami > p:first-of-type {
-  color: var(--ctp-subtext1);
-  font-size: 1.12em;
-}
-
-.whoami__updated {
-  color: var(--ctp-overlay0);
-  font-size: 0.85em;
-}
-
-.md-typeset .timeline dl {
-  display: grid;
-  grid-template-columns: 4.5em 1fr;
-  gap: 0.6em 1.2em;
-  margin: 0;
-}
-
-.md-typeset .timeline dt {
-  color: var(--ctp-mauve);
-  font-family: var(--md-code-font-family);
-  font-weight: 500;
-}
-
-.md-typeset .timeline dd {
-  margin: 0;
-}
-
 .md-header {
   color: var(--ctp-text);
   background-color: var(--md-default-bg-color--light);

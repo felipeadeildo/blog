@@ -1,0 +1,811 @@
+/* /whoami: o fastfetch ocupa a primeira tela; rolando, a história aparece com o mapa ao lado. */
+
+.md-main__inner .md-content__inner:has(.whoami) {
+  max-width: 1160px;
+}
+
+/* O fastfetch já diz whoami; o h1 fica só para leitores de tela. */
+.md-typeset .whoami h1 {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* fastfetch */
+
+.md-typeset .fetch {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 3.5em;
+  min-height: calc(100svh - 6.7rem);
+  margin: 0 auto;
+  padding: 1.5em 0 3em;
+  font-family: var(--md-code-font-family);
+  font-size: 0.78em;
+  line-height: 1.55;
+}
+
+.md-typeset .fetch p {
+  margin: 0;
+}
+
+.fetch__body {
+  display: flex;
+  gap: 3em;
+  align-items: flex-start;
+  max-width: 100%;
+}
+
+.fetch__portrait {
+  flex: none;
+  width: 24rem;
+  align-self: center;
+}
+
+/* O fundo da arte é a cor da página em cada tema, então ela não precisa de moldura; só os
+   ombros, cortados pela borda da imagem, se dissolvem no fundo. */
+.md-typeset .fetch__image {
+  display: block;
+  width: 100%;
+  height: auto;
+  mask-image: linear-gradient(#000 72%, transparent 98%);
+}
+
+[data-md-color-scheme="latte"] .fetch__image--dark,
+[data-md-color-scheme="slate"] .fetch__image--light {
+  display: none;
+}
+
+.fetch__info {
+  min-width: 0;
+  color: var(--ctp-text);
+}
+
+.fetch__accent {
+  color: var(--ctp-mauve);
+  font-weight: 600;
+}
+
+/* O host é o navegador de quem lê; o balão diz isso a quem passar o mouse ou focar. */
+.fetch__host {
+  position: relative;
+  cursor: help;
+  text-decoration: underline dotted var(--ctp-overlay0);
+  text-underline-offset: 0.3em;
+}
+
+.fetch__host::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: calc(100% + 0.6em);
+  left: 50%;
+  padding: 0.35em 0.7em;
+  border: 1px solid var(--ctp-surface1);
+  border-radius: 0.35rem;
+  background: var(--ctp-mantle);
+  color: var(--ctp-text);
+  font-weight: 400;
+  white-space: nowrap;
+  opacity: 0;
+  translate: -50% 0.25em;
+  pointer-events: none;
+  transition: opacity 150ms ease, translate 150ms ease;
+}
+
+.fetch__host:hover::after,
+.fetch__host:focus-visible::after {
+  opacity: 1;
+  translate: -50% 0;
+}
+
+.md-typeset .fetch__field dd[data-live] {
+  font-variant-numeric: tabular-nums;
+}
+
+.fetch__rule {
+  color: var(--ctp-overlay1);
+}
+
+.md-typeset .fetch__fields {
+  margin: 0;
+}
+
+.fetch__field {
+  display: flex;
+  gap: 0.6ch;
+}
+
+.md-typeset .fetch__field dt {
+  flex: none;
+  color: var(--ctp-mauve);
+  font-weight: 600;
+}
+
+.md-typeset .fetch__field dt::after {
+  content: ":";
+  color: var(--ctp-text);
+  font-weight: 400;
+}
+
+.md-typeset .fetch__field dd {
+  margin: 0;
+}
+
+.md-typeset .fetch__field a {
+  color: var(--ctp-blue);
+}
+
+.fetch__palette {
+  display: flex;
+  margin-top: 1.4em;
+}
+
+.fetch__palette span {
+  width: 3ch;
+  height: 1.4em;
+  background: var(--swatch);
+}
+
+.md-typeset .fetch .fetch__lede {
+  max-width: 34em;
+  color: var(--ctp-subtext1);
+  font-family: var(--md-text-font-family);
+  font-size: 1.44em;
+  line-height: 1.6;
+  text-align: center;
+  text-wrap: balance;
+}
+
+/* história */
+
+.story {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  grid-template-areas: "text map";
+  gap: 4.5rem;
+  margin-top: 3rem;
+}
+
+.story__chapters {
+  position: relative;
+  grid-area: text;
+  padding: 6vh 0 35vh;
+}
+
+/* A linha do tempo: o trilho vai do primeiro ao último marco (medidos pelo whoami.js) e o
+   preenchimento cresce com a rolagem, com uma ponta acesa onde a história está. */
+.rail {
+  --rail-start: 0px;
+  --rail-end: 0px;
+  --rail-fill: 0px;
+
+  position: absolute;
+  top: var(--rail-start);
+  left: calc(0.325rem - 0.5px);
+  width: 1px;
+  height: calc(var(--rail-end) - var(--rail-start));
+  background: repeating-linear-gradient(var(--ctp-surface2) 0 3px, transparent 3px 7px);
+  pointer-events: none;
+}
+
+.story:not(.is-live) .rail {
+  display: none;
+}
+
+.rail__fill {
+  position: absolute;
+  top: 0;
+  left: -0.5px;
+  width: 2px;
+  height: var(--rail-fill);
+  border-radius: 1px;
+  background: linear-gradient(var(--ctp-mauve), var(--ctp-blue));
+}
+
+.rail__fill::after {
+  content: "";
+  position: absolute;
+  bottom: -3px;
+  left: -2px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ctp-blue);
+  box-shadow: 0 0 8px 2px color-mix(in srgb, var(--ctp-blue) 60%, transparent);
+  opacity: var(--rail-tip, 0);
+}
+
+.story__stage {
+  --stage-top: 7.5rem;
+
+  position: sticky;
+  top: var(--stage-top);
+  grid-area: map;
+  display: flex;
+  flex-direction: column;
+  height: calc(100svh - var(--stage-top) - 1.5rem);
+  min-height: 22rem;
+}
+
+.story__map {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid var(--ctp-surface0);
+  border-radius: 0.6rem;
+  background: var(--ctp-mantle);
+}
+
+.story__map svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.md-typeset .chapter {
+  --focus: 1;
+  --rail: 2.4rem;
+
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 82vh;
+  padding: 2em 0 2em var(--rail);
+}
+
+.story.is-live .chapter {
+  opacity: calc(0.28 + 0.72 * var(--focus));
+}
+
+.md-typeset .chapter__head {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.3em 1em;
+  margin: 0 0 0.5em;
+  font-family: var(--md-code-font-family);
+}
+
+/* O marco do trilho, na altura da data. */
+.md-typeset .chapter__head::before {
+  content: "";
+  position: absolute;
+  top: 0.45em;
+  left: calc(-1 * var(--rail));
+  width: 0.65rem;
+  height: 0.65rem;
+  border: 1px solid var(--ctp-overlay0);
+  border-radius: 50%;
+  background: var(--ctp-base);
+  transition: background-color 300ms ease, border-color 300ms ease, box-shadow 300ms ease;
+}
+
+.md-typeset .chapter.is-passed .chapter__head::before {
+  border-color: var(--ctp-mauve);
+  background: color-mix(in srgb, var(--ctp-mauve) 35%, var(--md-default-bg-color));
+}
+
+.md-typeset .chapter.is-active .chapter__head::before {
+  border-color: var(--ctp-mauve);
+  background: var(--ctp-mauve);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--ctp-mauve) 22%, transparent);
+}
+
+.chapter__head time {
+  color: var(--ctp-mauve);
+  font-size: 0.95em;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.chapter__head span {
+  color: var(--ctp-overlay1);
+  font-size: 0.7em;
+}
+
+.chapter__head b {
+  color: var(--ctp-blue);
+  font-weight: 500;
+}
+
+.md-typeset .chapter h2 {
+  margin: 0 0 0.8em;
+  font-size: 1.6em;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.md-typeset .chapter h2 .headerlink {
+  display: none;
+}
+
+/* Medalhas e bolsas: chave em mono à esquerda, como os campos do fastfetch. */
+.md-typeset .chapter dl {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.55em 1.4em;
+  margin: 1.2em 0;
+}
+
+.md-typeset .chapter dt {
+  color: var(--ctp-mauve);
+  font-family: var(--md-code-font-family);
+  font-size: 0.85em;
+  font-weight: 600;
+  line-height: 1.9;
+}
+
+.md-typeset .chapter dd,
+.md-typeset .chapter dd p {
+  margin: 0;
+}
+
+.md-typeset .chapter dt.is-empty,
+.md-typeset .chapter dt.is-empty + dd {
+  color: var(--ctp-overlay0);
+}
+
+/* O primeiro computador, como um fastfetch em miniatura. */
+.md-typeset .chapter__machine {
+  width: fit-content;
+  margin: 1.2em 0;
+  padding: 0.9em 1.2em;
+  border-left: 2px solid var(--ctp-mauve);
+  background: var(--ctp-mantle);
+  font-family: var(--md-code-font-family);
+  font-size: 0.78em;
+}
+
+.md-typeset .chapter__machine p {
+  margin: 0 0 0.5em;
+}
+
+.chapter__machine b {
+  color: var(--ctp-mauve);
+}
+
+.md-typeset .chapter__machine dl {
+  gap: 0.2em 1.2em;
+  margin: 0;
+}
+
+.md-typeset .chapter__machine dt {
+  font-size: 1em;
+  line-height: inherit;
+}
+
+/* Maceió: o ensino médio como processos rodando em paralelo. */
+.md-typeset ul.chapter__jobs {
+  margin: 1.2em 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: job;
+  font-size: 0.92em;
+}
+
+.md-typeset ul.chapter__jobs li {
+  display: grid;
+  grid-template-columns: 2.4em 7.5em 1fr;
+  gap: 0 0.8em;
+  margin: 0;
+  padding: 0.45em 0;
+  border-bottom: 1px solid var(--ctp-surface0);
+  counter-increment: job;
+}
+
+.md-typeset ul.chapter__jobs li::before {
+  content: "[" counter(job) "]";
+  color: var(--ctp-overlay1);
+  font-family: var(--md-code-font-family);
+  font-size: 0.85em;
+  line-height: 1.9;
+}
+
+.chapter__jobs b {
+  color: var(--ctp-green);
+  font-family: var(--md-code-font-family);
+  font-size: 0.85em;
+  font-weight: 600;
+  line-height: 1.9;
+}
+
+/* A escolha de 2021, como uma pergunta de terminal com a opção marcada. */
+.md-typeset ul.chapter__choice {
+  margin: 1.2em 0;
+  padding: 0;
+  list-style: none;
+}
+
+.md-typeset ul.chapter__choice li {
+  display: flex;
+  gap: 0.8em;
+  margin: 0.35em 0;
+  color: var(--ctp-overlay1);
+}
+
+.md-typeset ul.chapter__choice li::before {
+  content: "○";
+  flex: none;
+  font-family: var(--md-code-font-family);
+}
+
+.md-typeset ul.chapter__choice li.is-picked {
+  color: var(--ctp-text);
+}
+
+.md-typeset ul.chapter__choice li.is-picked::before {
+  content: "●";
+  color: var(--ctp-green);
+}
+
+.md-typeset ul.chapter__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45em;
+  margin: 1.2em 0;
+  padding: 0;
+  list-style: none;
+}
+
+.md-typeset ul.chapter__tags li {
+  margin: 0;
+  padding: 0.15em 0.65em;
+  border: 1px solid var(--ctp-surface1);
+  border-radius: 999px;
+  color: var(--ctp-subtext1);
+  font-family: var(--md-code-font-family);
+  font-size: 0.72em;
+}
+
+.md-typeset ul.chapter__tags li.is-more {
+  border-style: dashed;
+  color: var(--ctp-overlay1);
+}
+
+.md-typeset .chapter abbr {
+  text-decoration-color: var(--ctp-overlay0);
+}
+
+.md-typeset .whoami__updated {
+  margin-top: 0.8em;
+  color: var(--ctp-overlay0);
+  font-size: 0.75em;
+}
+
+/* mapa */
+
+.map__state {
+  fill: url("#map-dots");
+  stroke: var(--ctp-surface1);
+  stroke-width: 0.6;
+  vector-effect: non-scaling-stroke;
+  transition: fill 700ms ease, stroke 700ms ease;
+}
+
+#map-dots circle {
+  fill: var(--ctp-surface2);
+}
+
+.map__state.is-lit {
+  fill: color-mix(in srgb, var(--ctp-mauve) 16%, transparent);
+  stroke: var(--ctp-mauve);
+}
+
+.map__reveal {
+  fill: none;
+  stroke: #fff;
+  stroke-linecap: round;
+}
+
+.map__route {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.map__route--road {
+  stroke: var(--ctp-mauve);
+}
+
+.map__route--commute {
+  stroke: var(--ctp-green);
+}
+
+.map__route--flight {
+  stroke: var(--ctp-blue);
+}
+
+.map__route--remote {
+  stroke: var(--ctp-peach);
+}
+
+.map__comet,
+.map__bus {
+  --glow: var(--ctp-mauve);
+
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 250ms ease;
+}
+
+.map__comet circle,
+.map__bus circle {
+  fill: var(--glow);
+  filter: drop-shadow(0 0 3px var(--glow));
+}
+
+.map__comet[data-kind="flight"] {
+  --glow: var(--ctp-blue);
+}
+
+.map__comet[data-kind="remote"] {
+  --glow: var(--ctp-peach);
+}
+
+.map__comet[data-kind="commute"],
+.map__bus {
+  --glow: var(--ctp-green);
+}
+
+.map__comet.is-flying,
+.map__bus.is-running {
+  opacity: 1;
+}
+
+.map__dot {
+  fill: var(--ctp-subtext0);
+  stroke: var(--ctp-mantle);
+  stroke-width: 2;
+  transition: fill 300ms ease;
+}
+
+.map__pulse {
+  fill: none;
+  stroke: var(--ctp-mauve);
+  stroke-width: 1.5;
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.map__label {
+  fill: var(--ctp-subtext0);
+  font-family: var(--md-code-font-family);
+  font-size: 12px;
+  paint-order: stroke;
+  stroke: var(--ctp-mantle);
+  stroke-width: 4px;
+  stroke-linejoin: round;
+  transition: opacity 400ms ease;
+}
+
+.map__city.is-shown {
+  cursor: pointer;
+}
+
+.map__city.is-current .map__dot {
+  fill: var(--ctp-mauve);
+}
+
+.map__city.is-current .map__label {
+  fill: var(--ctp-text);
+  font-weight: 600;
+}
+
+.map__city.is-current .map__pulse {
+  animation: map-pulse 2.4s ease-out infinite;
+}
+
+@keyframes map-pulse {
+  from {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: scale(4.5);
+  }
+}
+
+/* Com o JS rodando, cidades e rótulos só aparecem quando a história chega neles. */
+.story.is-live .map__city {
+  opacity: 0;
+  transition: opacity 600ms ease;
+}
+
+.story.is-live .map__city.is-shown {
+  opacity: 1;
+}
+
+.story.is-live .map__city:not(.is-labeled) .map__label {
+  opacity: 0;
+}
+
+/* HUD por cima do mapa, no mesmo vocabulário do fastfetch. */
+.hud {
+  position: absolute;
+  inset-inline: 0;
+  display: flex;
+  justify-content: space-between;
+  gap: 1em;
+  padding: 0.8rem 1rem;
+  color: var(--ctp-overlay1);
+  font-family: var(--md-code-font-family);
+  font-size: 0.68rem;
+  line-height: 1.5;
+  pointer-events: none;
+}
+
+.hud--top {
+  top: 0;
+  background: linear-gradient(var(--ctp-mantle) 40%, transparent);
+}
+
+.hud--top.is-changing > * {
+  animation: hud-in 450ms ease both;
+}
+
+@keyframes hud-in {
+  from {
+    opacity: 0;
+    transform: translateY(-0.3rem);
+  }
+}
+
+.hud--bottom {
+  bottom: 0;
+  align-items: flex-end;
+  background: linear-gradient(transparent, var(--ctp-mantle) 60%);
+}
+
+.hud__place {
+  display: block;
+  color: var(--ctp-text);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.hud__when {
+  color: var(--ctp-mauve);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.hud__km {
+  color: var(--ctp-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.hud__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2em 1em;
+}
+
+.hud__legend span::before {
+  content: "";
+  display: inline-block;
+  width: 1.4em;
+  height: 0;
+  margin-right: 0.4em;
+  vertical-align: middle;
+  border-top: 2px solid var(--ctp-mauve);
+}
+
+.hud__legend .hud__commute::before {
+  border-top-color: var(--ctp-green);
+}
+
+.hud__legend .hud__flight::before {
+  border-top-style: dashed;
+  border-top-color: var(--ctp-blue);
+}
+
+.hud__legend .hud__remote::before {
+  border-top-style: dotted;
+  border-top-color: var(--ctp-peach);
+}
+
+/* Sem as abas no cabeçalho, a primeira tela e o mapa começam mais acima. */
+@media screen and (max-width: 76.1875em) {
+  .md-typeset .fetch {
+    min-height: calc(100svh - 3rem);
+  }
+
+  .story__stage {
+    --stage-top: 4.5rem;
+  }
+}
+
+@media screen and (max-width: 59.9375em) {
+  .md-typeset .fetch {
+    gap: 2.5em;
+  }
+
+  .fetch__body {
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5em;
+  }
+
+  .fetch__portrait {
+    width: min(18rem, 80%);
+  }
+
+  .md-typeset .fetch .fetch__lede {
+    font-size: 1.25em;
+    text-align: left;
+  }
+
+  .story {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "map" "text";
+    gap: 0;
+  }
+
+  .story__stage {
+    --stage-top: 3rem;
+
+    z-index: 1;
+    height: 42svh;
+    min-height: 15rem;
+    padding: 0.5rem 0 0.75rem;
+    background: var(--ctp-base);
+    box-shadow: 0 -2rem 0 var(--ctp-base);
+  }
+
+  .story__chapters {
+    padding-top: 0;
+  }
+
+  .md-typeset .chapter {
+    --rail: 1.5rem;
+
+    justify-content: flex-start;
+    min-height: 70svh;
+  }
+
+  .hud__legend {
+    display: none;
+  }
+
+  .md-typeset ul.chapter__jobs li {
+    position: relative;
+    display: block;
+    padding-left: 2.4em;
+  }
+
+  .md-typeset ul.chapter__jobs li::before {
+    position: absolute;
+    left: 0;
+  }
+
+  .chapter__jobs b {
+    display: block;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .map__state,
+  .map__label,
+  .map__comet,
+  .map__bus,
+  .story.is-live .map__city {
+    transition: none;
+  }
+
+  .map__city.is-current .map__pulse,
+  .hud--top.is-changing > * {
+    animation: none;
+  }
+}

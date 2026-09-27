@@ -11,6 +11,7 @@
 {% endblock %}
 
 {% block content %}
+  {% include "partials/fetch.html" %}
   {{ super() }}
   {% include "partials/ls.html" %}
 {% endblock %}

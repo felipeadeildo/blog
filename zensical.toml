@@ -4,8 +4,8 @@ site_name = "adeildo"
 site_description = "Adeildo's log and wiki: software, setup, opinions and everyday life."
 site_author = "Adeildo"
 copyright = "adeildo"
-extra_css = ["assets/stylesheets/letter.css", "assets/stylesheets/fzf.css", "assets/stylesheets/log.css"]
-extra_javascript = ["assets/javascripts/katex.js", "assets/javascripts/fzf.js", "assets/javascripts/log.js"]
+extra_css = ["assets/stylesheets/letter.css", "assets/stylesheets/fzf.css", "assets/stylesheets/log.css", "assets/stylesheets/whoami.css"]
+extra_javascript = ["assets/javascripts/katex.js", "assets/javascripts/fzf.js", "assets/javascripts/log.js", "assets/javascripts/whoami.js"]
 
 nav = [
   { "log" = ["log/index.md"] },

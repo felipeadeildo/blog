@@ -1,0 +1,44 @@
+{#- Cabeçalho estilo fastfetch. Campos em `fetch:` no front matter da página: `image` é o retrato
+    do tema claro, `image_dark` o do escuro (sem ele, vale o mesmo), `lede` vai embaixo. Um campo com
+    `live` e `since` é recalculado pelo whoami.js (`uptime` a cada segundo, `years` em anos); `value`
+    fica como texto sem JS. O host vira o navegador de quem lê; sem JS fica "browser". -#}
+{% if page.meta and page.meta.fetch %}
+  {% set fetch = page.meta.fetch %}
+  {% set host = "browser" %}
+  <section class="fetch" aria-label="{{ fetch.user }}@{{ host }}">
+    <div class="fetch__body">
+      <div class="fetch__portrait">
+        <img class="fetch__image fetch__image--light" src="{{ fetch.image | url }}" alt="{{ fetch.alt }}" width="720" height="720">
+        <img class="fetch__image fetch__image--dark" src="{{ (fetch.image_dark or fetch.image) | url }}" alt="{{ fetch.alt }}" width="720" height="720">
+      </div>
+      <div class="fetch__info">
+        <p class="fetch__title">
+          <span class="fetch__accent">{{ fetch.user }}</span>@<span class="fetch__accent fetch__host" data-fetch="host" data-tip="that's you" tabindex="0">{{ host }}</span>
+        </p>
+        <p class="fetch__rule" aria-hidden="true" data-fetch="rule">{{ "-" * (fetch.user | length + host | length + 1) }}</p>
+        <dl class="fetch__fields">
+          {% for field in fetch.fields %}
+            <div class="fetch__field">
+              <dt>{{ field.key }}</dt>
+              <dd{% if field.live %} data-live="{{ field.live }}" data-since="{{ field.since }}"{% endif %}>
+                {%- if field.link -%}
+                  <a href="{{ field.link }}">{{ field.value }}</a>
+                {%- else -%}
+                  {{ field.value }}
+                {%- endif -%}
+              </dd>
+            </div>
+          {% endfor %}
+        </dl>
+        <div class="fetch__palette" aria-hidden="true">
+          {% for color in ["surface2", "red", "green", "yellow", "blue", "mauve", "sky", "text"] %}
+            <span style="--swatch: var(--ctp-{{ color }})"></span>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    {% if fetch.lede %}
+      <p class="fetch__lede">{{ fetch.lede }}</p>
+    {% endif %}
+  </section>
+{% endif %}
