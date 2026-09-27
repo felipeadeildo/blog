@@ -6,4 +6,4 @@ hide:
 
 # log
 
-Posts com data, do mais novo para o mais antigo.
+Posts, newest first.

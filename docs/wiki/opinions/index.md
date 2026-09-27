@@ -2,6 +2,6 @@
 icon: lucide/scale
 ---
 
-# opiniões
+# opinions
 
-O que eu defendo hoje. Se eu mudar de ideia, a página muda junto.
+What I stand for today. If I change my mind, the page changes with me.

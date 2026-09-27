@@ -8,24 +8,24 @@ hide:
 
 # whoami
 
-Eu sou o Adeildo. Escrevo software e, de vez em quando, escrevo sobre ele.
+I'm Adeildo, a software developer. This page is the short version of who I am and what I'm up to.
 
-## agora
+## now
 
-- Montando este site.
+- Building this site.
 
-<p class="whoami__updated">atualizado em setembro de 2026</p>
+<p class="whoami__updated">updated September 2026</p>
 
-## trajetória
+## history
 
 <div class="timeline" markdown>
 
 2026
-:   Comecei este site.
+:   Started this site.
 
 </div>
 
-## onde me achar
+## elsewhere
 
 - [github.com/felipeadeildo](https://github.com/felipeadeildo)
 - [rss](https://adeildo.dev/feed_rss_created.xml)

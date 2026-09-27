@@ -2,6 +2,6 @@
 icon: lucide/sparkles
 ---
 
-# explicações
+# explainers
 
-Coisas que eu gostaria que alguém tivesse me explicado assim.
+Things I wish someone had explained to me this way.

@@ -1,19 +1,19 @@
 [project]
 site_url = "https://adeildo.dev"
 site_name = "adeildo"
-site_description = "Log e wiki do Adeildo sobre desenvolvimento, setup, opiniões e o dia a dia."
+site_description = "Adeildo's log and wiki: software, setup, opinions and everyday life."
 site_author = "Adeildo"
 copyright = "adeildo"
-extra_css = ["assets/stylesheets/letter.css"]
-extra_javascript = ["assets/javascripts/katex.js"]
+extra_css = ["assets/stylesheets/letter.css", "assets/stylesheets/fzf.css"]
+extra_javascript = ["assets/javascripts/katex.js", "assets/javascripts/fzf.js"]
 
 nav = [
   { "log" = ["log/index.md"] },
   { "wiki" = [
     "wiki/index.md",
     { "setup" = "wiki/setup/index.md" },
-    { "explicações" = "wiki/explainers/index.md" },
-    { "opiniões" = "wiki/opinions/index.md" },
+    { "explainers" = "wiki/explainers/index.md" },
+    { "opinions" = "wiki/opinions/index.md" },
   ] },
   { "whoami" = "whoami/index.md" },
 ]
@@ -33,7 +33,7 @@ name = "rss"
 
 [project.theme]
 custom_dir = "overrides"
-language = "pt-BR"
+language = "en"
 font = false
 logo = "assets/images/cat.svg"
 favicon = "assets/images/favicon.svg"
@@ -69,7 +69,7 @@ scheme = "latte"
 primary = "custom"
 accent = "custom"
 toggle.icon = "lucide/moon"
-toggle.name = "Mudar para o tema escuro"
+toggle.name = "Switch to dark theme"
 
 [[project.theme.palette]]
 media = "(prefers-color-scheme: dark)"
@@ -77,7 +77,7 @@ scheme = "slate"
 primary = "custom"
 accent = "custom"
 toggle.icon = "lucide/sun"
-toggle.name = "Mudar para o tema claro"
+toggle.name = "Switch to light theme"
 
 [project.plugins.blog]
 blog_dir = "log"
@@ -87,11 +87,11 @@ post_url_format = "{date}/{slug}"
 post_url_date_format = "yyyy"
 post_readtime = true
 post_excerpt = "optional"
-archive_name = "arquivo"
+archive_name = "archive"
 archive_url_format = "archive/{date}"
 archive_date_format = "yyyy"
 archive_url_date_format = "yyyy"
-categories_name = "assuntos"
+categories_name = "topics"
 categories_url_format = "category/{slug}"
 categories_allowed = ["dev", "life", "opinion", "daily", "setup", "history"]
 pagination_per_page = 10
@@ -115,7 +115,7 @@ md_in_html = {}
 smarty = {}
 tables = {}
 toc.permalink = "§"
-toc.permalink_title = "Link para esta seção"
+toc.permalink_title = "Link to this section"
 toc.toc_depth = 3
 pymdownx.arithmatex.generic = true
 pymdownx.betterem = {}

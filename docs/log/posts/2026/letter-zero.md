@@ -8,47 +8,48 @@ categories:
 tags:
   - typography
   - meta
-closing: Até a próxima,
+closing: Until next time,
 ---
 
-# Carta zero
+# Letter zero
 
-Este post é um espécime. Ele passa por todos os elementos que um post pode
-ter, para eu ver como cada um fica antes de escrever de verdade.
+This post is a specimen. It goes through every element a post can have, so I
+can see how each one looks before writing for real.
 
 <!-- more -->
 
-## Texto corrido
+## Running text
 
-Cada linha tem uns 65 caracteres e a hifenização segue o português. Dá para usar *itálico de verdade*, **negrito**,
-==marca-texto amarelo== e `código em linha`, e até
-`#!python sorted(xs, key=len)` com realce. Siglas como <abbr title="HyperText Markup Language">HTML</abbr>,
-API e CPU mostram o nome por extenso quando o mouse passa por cima.[^siglas]
+Each line holds about 65 characters and hyphenation follows English rules. You
+can use *real italics*, **bold**, ==highlighter yellow== and `inline code`, and
+even `#!python sorted(xs, key=len)` with highlighting. Abbreviations like
+<abbr title="HyperText Markup Language">HTML</abbr>, API and CPU show their full
+name on hover.[^abbr]
 
-As aspas retas viram "aspas curvas" e três pontos viram reticências... Frações
-como 1/2 e 3/4 viram um glifo só. Setas --> e <-- também. Teclas ficam assim:
-++ctrl+shift+p++.
+Straight quotes become "curly quotes" and three dots become an ellipsis...
+Fractions like 1/2 and 3/4 become a single glyph. So do arrows --> and <--.
+Keys look like this: ++ctrl+shift+p++.
 
-[^siglas]: A nota aparece como dica quando o mouse passa sobre o número.
+[^abbr]: The note shows up as a tooltip when you hover the number.
 
-### Uma citação
+### A quote
 
-> Programas devem ser escritos para pessoas lerem, e só incidentalmente
-> para máquinas executarem.
+> Programs must be written for people to read, and only incidentally for
+> machines to execute.
 >
 > <cite>Abelson &amp; Sussman</cite>
 
-### Listas
+### Lists
 
-1. O texto precisa ser confortável de ler.
-2. O código precisa ser tão legível quanto o texto.
+1. Text has to be comfortable to read.
+2. Code has to be as readable as the text.
 
-E uma lista de tarefas:
+And a task list:
 
-- [x] fontes auto-hospedadas
-- [ ] escrever a primeira carta de verdade
+- [x] self-hosted fonts
+- [ ] write the first real letter
 
-## Código
+## Code
 
 ``` python title="fibonacci.py" linenums="1" hl_lines="4"
 from functools import cache
@@ -56,18 +57,18 @@ from functools import cache
 
 @cache  # (1)!
 def fib(n: int) -> int:
-    """Retorna o n-ésimo número de Fibonacci."""
+    """Return the n-th Fibonacci number."""
     return n if n < 2 else fib(n - 1) + fib(n - 2)
 ```
 
-1.  O `cache` transforma a recursão exponencial em linear.
+1.  `cache` turns the exponential recursion into a linear one.
 
 === "Rust"
 
     ``` rust
     fn main() {
         let total: u64 = (1..=10).sum();
-        println!("soma = {total}");
+        println!("sum = {total}");
     }
     ```
 
@@ -76,13 +77,13 @@ def fib(n: int) -> int:
     ``` ts
     const total = Array.from({ length: 10 }, (_, i) => i + 1)
       .reduce((a, b) => a + b, 0);
-    console.log(`soma = ${total}`);
+    console.log(`sum = ${total}`);
     ```
 
-## Matemática
+## Math
 
-A soma dos $n$ primeiros inteiros é $\frac{n(n+1)}{2}$. A identidade de Euler
-fica em bloco:
+The sum of the first $n$ integers is $\frac{n(n+1)}{2}$. Euler's identity goes
+in a block:
 
 $$
 e^{i\pi} + 1 = 0
@@ -92,41 +93,41 @@ $$
 
 ***
 
-## Ícones
+## Icons
 
-Ícones do Lucide com as cores do Catppuccin:
+Lucide icons in Catppuccin colors:
 :lucide-terminal:{ .mauve } :lucide-git-branch:{ .blue } :lucide-coffee:{ .peach }
-:lucide-leaf:{ .green } :lucide-star:{ .yellow } e um :lucide-heart:{ .heart }
-que pulsa. Emojis também funcionam :sparkles:.
+:lucide-leaf:{ .green } :lucide-star:{ .yellow } and a :lucide-heart:{ .heart }
+that beats. Emojis work too :sparkles:.
 
-## Tabela
+## Table
 
-| Serviço |   p50 |    p95 | Erros |
-| :------ | ----: | -----: | ----: |
-| api     | 12 ms |  48 ms | 0,02% |
-| worker  | 31 ms | 140 ms | 0,31% |
+| Service |   p50 |    p95 | Errors |
+| :------ | ----: | -----: | -----: |
+| api     | 12 ms |  48 ms |  0.02% |
+| worker  | 31 ms | 140 ms |  0.31% |
 
-## Avisos
+## Callouts
 
-!!! note "Nota"
+!!! note "Note"
 
-    Uma observação lateral.
+    A side remark.
 
-!!! warning "Cuidado"
+!!! warning "Careful"
 
-    Algo que quebra se ninguém prestar atenção.
+    Something that breaks if nobody pays attention.
 
-??? tip "Uma dica recolhida"
+??? tip "A collapsed tip"
 
-    Aparece só quando você abre.
+    Only shows up when you open it.
 
-## Diagrama
+## Diagram
 
 ``` mermaid
 graph LR
-  A[rascunho] --> B{bom?};
-  B -->|não| A;
-  B -->|sim| C[publicar];
+  A[draft] --> B{good?};
+  B -->|no| A;
+  B -->|yes| C[publish];
 ```
 
 *[API]: Application Programming Interface
