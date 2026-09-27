@@ -133,13 +133,15 @@ Each language gets its own manager, installed from its own script and not from `
 
     My default is Node 24.19.0.
 
-    !!! note "It doesn't switch versions by itself"
+    !!! tip "Make it switch versions by itself"
 
-        The installer sets fnm up without `--use-on-cd`, so walking into a project with a `.nvmrc` doesn't change the Node version. `fnm use` inside the folder does it by hand. To make it automatic, change the line in `conf.d/fnm.fish` to:
+        The installer sets fnm up without `--use-on-cd`, so walking into a project with a `.nvmrc` doesn't change the Node version. I only noticed while writing this page. Adding the flag to the line in `conf.d/fnm.fish` fixes it:
 
-        ``` fish
+        ``` fish title="~/.config/fish/conf.d/fnm.fish"
         fnm env --use-on-cd --shell fish | source
         ```
+
+        Now `cd` into a project picks the version from its `.nvmrc` or `.node-version`, and says so when that version isn't installed yet.
 
 ## Editor
 
