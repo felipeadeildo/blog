@@ -20,6 +20,8 @@ const ICONS = {
   command: "chevron-right",
 };
 
+const PAGE_ICON_KINDS = new Set(["post", "doc", "exec"]);
+
 const KIND_LABELS = {
   home: "home",
   dir: "directory",
@@ -305,12 +307,23 @@ function element(tag, className, text) {
   return node;
 }
 
-function icon(kind) {
+function iconSvg(kind, page) {
   iconTemplate ??= document.getElementById("fzf-icons")?.content;
+
+  if (PAGE_ICON_KINDS.has(kind)) {
+    const custom = iconTemplate?.querySelector(`[data-page="${CSS.escape(page)}"] svg`);
+    if (custom) {
+      return custom;
+    }
+  }
+  return iconTemplate?.querySelector(`[data-icon="${ICONS[kind]}"] svg`);
+}
+
+function icon(kind, page) {
   const node = element("span", `fzf__icon fzf__icon--${kind}`);
   node.setAttribute("aria-hidden", "true");
 
-  const svg = iconTemplate?.querySelector(`[data-icon="${ICONS[kind]}"] svg`);
+  const svg = iconSvg(kind, page);
   if (svg) {
     node.append(svg.cloneNode(true));
   }
@@ -382,7 +395,7 @@ function build() {
 function previewHeader(entry) {
   const header = element("div", "fzf__preview-header");
   const heading = element("div", "fzf__preview-heading");
-  heading.append(icon(entry.kind), element("span", "fzf__preview-title", entry.title));
+  heading.append(icon(entry.kind, entry.page), element("span", "fzf__preview-title", entry.title));
   header.append(heading, element("span", "fzf__preview-kind", KIND_LABELS[entry.kind]));
   return header;
 }
@@ -467,7 +480,7 @@ function renderPreview(row) {
   if (entry.kind === "dir") {
     const items = childrenOf(entry.page).map(function (child) {
       const node = element("li");
-      node.append(icon(child.kind), element("span", null, child.title));
+      node.append(icon(child.kind, child.page), element("span", null, child.title));
       return { node, location: child.location };
     });
     if (items.length > 0) {
@@ -499,7 +512,7 @@ function renderRow(row, index) {
   if (branch) {
     item.append(element("span", "fzf__branch", branch));
   }
-  item.append(icon(entry.kind));
+  item.append(icon(entry.kind, entry.page));
 
   if (entry.kind === "command") {
     item.append(element("span", "fzf__title", entry.name), element("span", "fzf__path", entry.description));

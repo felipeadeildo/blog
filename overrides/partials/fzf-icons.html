@@ -2,4 +2,11 @@
   {% for name in ["house", "folder", "file-text", "file", "hash", "square-terminal", "chevron-right"] %}
     <span data-icon="{{ name }}">{% include ".icons/lucide/" ~ name ~ ".svg" %}</span>
   {% endfor %}
+  {% for item in nav.items recursive %}
+    {% if item.children %}
+      {{ loop(item.children) }}
+    {% elif item.meta and item.meta.icon %}
+      <span data-page="{{ item.url }}">{% include ".icons/" ~ item.meta.icon ~ ".svg" %}</span>
+    {% endif %}
+  {% endfor %}
 </template>
