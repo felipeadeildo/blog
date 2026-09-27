@@ -165,6 +165,12 @@
   --md-admonition-fg-color: var(--ctp-text);
   --md-admonition-bg-color: var(--ctp-base);
 
+  --md-mermaid-node-bg-color: var(--ctp-surface0);
+  --md-mermaid-node-fg-color: var(--ctp-mauve);
+  --md-mermaid-edge-color: var(--ctp-overlay1);
+  --md-mermaid-label-fg-color: var(--ctp-text);
+  --md-mermaid-label-bg-color: var(--ctp-base);
+
   --md-footer-fg-color: var(--ctp-subtext0);
   --md-footer-fg-color--light: var(--ctp-subtext0);
   --md-footer-fg-color--lighter: var(--ctp-overlay0);
@@ -364,6 +370,31 @@
 .md-typeset table:not([class]) th {
   font-weight: 600;
   background-color: var(--ctp-mantle);
+}
+
+/* Grades de cards: duas colunas, e o card que sobra sozinho na última linha fica no centro.
+   Em coluna estreita, um card por linha. */
+.md-typeset .grid.cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem;
+  container-type: inline-size;
+}
+
+.md-typeset .grid.cards > :is(ul, ol) > li {
+  flex: 0 1 calc(50% - 0.2rem);
+}
+
+@container (max-width: 32rem) {
+  .md-typeset .grid.cards > :is(ul, ol) > li {
+    flex-basis: 100%;
+  }
+}
+
+/* Imagem sozinha no parágrafo e menor que a coluna, como um screenshot de um painel: no centro. */
+.md-typeset p:has(> img:only-child:not([align])) {
+  text-align: center;
 }
 
 .md-typeset :is(.admonition, details) {

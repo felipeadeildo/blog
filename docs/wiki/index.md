@@ -4,8 +4,8 @@ icon: lucide/book-open
 
 # wiki
 
-Pages that change when I change my mind.
+How my machine is put together, written down so I can rebuild it and so you can steal from it. These pages change when the setup changes.
 
-- [setup](setup/index.md): the machine, the editor, the terminal and the dotfiles.
-- [explainers](explainers/index.md): things I wish someone had explained to me this way.
-- [opinions](opinions/index.md): what I stand for today.
+- [desktop](desktop/index.md): the operating system, the compositor and the shell. CachyOS, niri and DankMaterialShell.
+- [workbench](workbench/index.md): the terminal and the development environment. Shell, package managers, language runtimes.
+- [agents](agents/index.md): the AI coding harness I work with every day.

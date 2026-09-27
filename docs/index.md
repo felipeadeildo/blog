@@ -11,7 +11,7 @@ ls:
   - mode: drwxr-xr-x
     name: wiki/
     link: wiki/
-    note: setup, explainers and opinions
+    note: desktop, workbench and agents
   - mode: .rwxr-xr-x
     name: whoami
     link: whoami/

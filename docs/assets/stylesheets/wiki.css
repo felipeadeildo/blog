@@ -1,0 +1,183 @@
+/* Páginas da wiki. */
+
+/* niri: o monitor fica parado e a faixa de janelas maximizadas desliza por baixo dele. Cada linha
+   é um workspace; só a primeira anda, as de baixo só espiam para mostrar que existem. */
+.md-typeset .strip {
+  --w: 46cqi;
+  --gap: 1.2cqi;
+  --x: 27cqi;
+  --h: 26cqi;
+  --peek: 3.2rem;
+  --step: calc(var(--w) + var(--gap));
+
+  display: block;
+  width: 100%;
+  max-width: none;
+  margin: 1.6em 0 2em;
+  container-type: inline-size;
+}
+
+.strip__stage {
+  position: relative;
+  padding: 1.4rem 0 1.2rem;
+  overflow: hidden;
+  border-radius: 0.6rem;
+  background: var(--ctp-mantle);
+  mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent);
+}
+
+.strip__row {
+  position: relative;
+  height: var(--peek);
+  margin-top: 0.5rem;
+  opacity: 0.45;
+}
+
+.strip__row--active {
+  height: var(--h);
+  margin: 0 0 1.8rem;
+  opacity: 1;
+}
+
+.strip__label {
+  position: absolute;
+  top: 0.2rem;
+  left: calc(var(--x) - 3ch);
+  color: var(--ctp-overlay1);
+  font-family: var(--md-code-font-family);
+  font-size: 0.7rem;
+}
+
+.strip__track {
+  position: absolute;
+  inset-block: 0;
+  left: var(--x);
+  display: flex;
+  gap: var(--gap);
+}
+
+.strip__row--active .strip__track {
+  animation: strip-scroll 12s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+.md-typeset .strip:hover .strip__track {
+  animation-play-state: paused;
+}
+
+.strip__window {
+  position: relative;
+  flex: none;
+  width: var(--w);
+  border: 1px solid color-mix(in srgb, var(--tint) 45%, transparent);
+  border-radius: 0.45rem;
+  background:
+    repeating-linear-gradient(transparent 0 0.9rem, color-mix(in srgb, var(--tint) 10%, transparent) 0.9rem 1.25rem) 0.8rem 2.6rem / 60% calc(100% - 3.6rem) no-repeat,
+    color-mix(in srgb, var(--tint) 7%, var(--ctp-base));
+}
+
+.strip__window b {
+  display: block;
+  padding: 0.35rem 0.7rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--tint) 25%, transparent);
+  color: var(--tint);
+  font-family: var(--md-code-font-family);
+  font-size: 0.68rem;
+  font-weight: 600;
+}
+
+/* O monitor: um contorno parado em cima da primeira linha. */
+.strip__screen {
+  position: absolute;
+  top: calc(1.4rem - 0.35rem);
+  left: calc(var(--x) - 0.35rem);
+  width: calc(var(--w) + 0.7rem);
+  height: calc(var(--h) + 0.7rem);
+  border: 2px solid var(--ctp-mauve);
+  border-radius: 0.7rem;
+  box-shadow: 0 0 0 100vmax color-mix(in srgb, var(--ctp-mantle) 35%, transparent);
+  pointer-events: none;
+}
+
+.strip__screen span {
+  position: absolute;
+  bottom: -1.7em;
+  left: 50%;
+  translate: -50% 0;
+  color: var(--ctp-mauve);
+  font-family: var(--md-code-font-family);
+  font-size: 0.65rem;
+}
+
+.md-typeset .strip figcaption {
+  max-width: none;
+  margin-top: 0.8em;
+  color: var(--ctp-subtext0);
+  font-size: 0.8em;
+  text-align: left;
+}
+
+@keyframes strip-scroll {
+  0%, 16% {
+    translate: 0;
+  }
+
+  25%, 41% {
+    translate: calc(-1 * var(--step));
+  }
+
+  50%, 66% {
+    translate: calc(-2 * var(--step));
+  }
+
+  75%, 91% {
+    translate: calc(-3 * var(--step));
+  }
+
+  100% {
+    translate: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .strip__row--active .strip__track {
+    animation: none;
+  }
+}
+
+/* A barra do DMS em três recortes no tamanho real, cada um com a explicação embaixo. */
+.md-typeset .bar-parts {
+  display: grid;
+  gap: 1.1em;
+  margin: 1.4em 0;
+}
+
+.md-typeset .bar-parts figure {
+  display: block;
+  max-width: none;
+  margin: 0;
+  text-align: left;
+}
+
+.md-typeset .bar-parts img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 0;
+  border-radius: 0.3rem;
+}
+
+.md-typeset .bar-parts figcaption {
+  max-width: none;
+  margin: 0.45em 0 0;
+  color: var(--ctp-subtext1);
+  font-size: 0.85em;
+  font-style: normal;
+  text-align: left;
+}
+
+.md-typeset .bar-parts figcaption b {
+  margin-right: 0.8ch;
+  color: var(--ctp-mauve);
+  font-family: var(--md-code-font-family);
+  font-weight: 600;
+}
