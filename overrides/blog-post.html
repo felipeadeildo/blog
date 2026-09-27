@@ -2,20 +2,50 @@
 {% import "partials/locale.html" as locale with context %}
 
 {% block container %}
+  {% set tags = (page.meta.categories or []) + (page.meta.tags or []) %}
+  <aside class="meta" data-feed="{{ page.parent.url | url }}" aria-label="post details">
+    <dl class="meta__fields">
+      <dt>created</dt>
+      <dd>{{ locale.long_date(page.config.date.created) }}</dd>
+      {% if page.config.date.updated %}
+        <dt>updated</dt>
+        <dd>{{ locale.long_date(page.config.date.updated) }}</dd>
+      {% endif %}
+      {% if page.config.readtime %}
+        <dt>reading</dt>
+        <dd>{{ page.config.readtime }} min</dd>
+      {% endif %}
+      <dt>words</dt>
+      <dd data-words>…</dd>
+      {% if tags %}
+        <dt>tags</dt>
+        <dd class="meta__tags">
+          {%- for tag in tags %}
+            <a href="{{ page.parent.url | url }}?q=%23{{ tag | urlencode }}">#{{ tag }}</a>
+          {%- endfor %}
+        </dd>
+      {% endif %}
+      {% if page.config.draft %}
+        <dt>status</dt>
+        <dd><span class="draft">{{ locale.t("draft") }}</span></dd>
+      {% endif %}
+    </dl>
+  </aside>
   <div class="md-content md-content--post" data-md-component="content">
     <article class="md-content__inner md-typeset letter">
       {% block content %}
         <p class="letter__dateline">
-          <a href="{{ page.parent.url | url }}">log</a>
-          <span class="letter__sep" aria-hidden="true">/</span>
           {{ locale.long_date(page.config.date.created) }}
-          {%- for category in page.categories %}
-            <span class="letter__sep" aria-hidden="true">·</span>
-            <a href="{{ category.url | url }}">{{ category.title }}</a>
-          {%- endfor %}
           {%- if page.config.readtime %}
             <span class="letter__sep" aria-hidden="true">·</span>
             {{ page.config.readtime }} min
+          {%- endif %}
+          {%- set tags = (page.meta.categories or []) + (page.meta.tags or []) %}
+          {%- if tags %}
+            <span class="letter__sep" aria-hidden="true">·</span>
+            {%- for tag in tags %}
+              <a class="letter__tag" href="{{ page.parent.url | url }}?q=%23{{ tag | urlencode }}">#{{ tag }}</a>
+            {%- endfor %}
           {%- endif %}
           {%- if page.config.draft %}
             <span class="draft">{{ locale.t("draft") }}</span>

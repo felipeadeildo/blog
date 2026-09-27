@@ -1,6 +1,7 @@
 {% set locales = {
   "pt-BR": {
     "months": ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"],
+    "months_short": ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"],
     "date": "{day} de {month} de {year}",
     "closing": "Abraço,",
     "revised": "revisado em",
@@ -8,6 +9,7 @@
   },
   "en": {
     "months": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+    "months_short": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
     "date": "{month} {day}, {year}",
     "closing": "Cheers,",
     "revised": "revised on",
@@ -29,7 +31,7 @@
   <time datetime="{{ iso[:10] }}">{{ text }}</time>
 {%- endmacro %}
 
-{% macro iso_date(value) -%}
+{% macro short_date(value) -%}
   {%- set iso = (value | string)[:10] -%}
-  <time datetime="{{ iso }}">{{ iso }}</time>
+  <time datetime="{{ iso }}">{{ current.months_short[(iso[5:7] | int) - 1] }} {{ iso[8:10] }}</time>
 {%- endmacro %}

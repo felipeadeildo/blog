@@ -15,8 +15,6 @@ const ICONS = {
   dir: "folder",
   post: "file-text",
   doc: "file",
-  archive: "calendar",
-  category: "tag",
   exec: "square-terminal",
   section: "hash",
   command: "chevron-right",
@@ -27,14 +25,12 @@ const KIND_LABELS = {
   dir: "directory",
   post: "post",
   doc: "page",
-  archive: "archive",
-  category: "category",
   exec: "executable",
   section: "section",
   command: "command",
 };
 
-const CHILD_ORDER = ["dir", "post", "doc", "exec", "archive", "category"];
+const CHILD_ORDER = ["dir", "post", "doc", "exec"];
 const NO_HIGHLIGHTS = { title: [], path: [] };
 
 const COMMANDS = [
@@ -57,6 +53,9 @@ const HELP = [
   ["tab", "complete the command"],
   ["esc", "close; outside the terminal, go up one level"],
   ["t", "toggle the theme"],
+  ["↑ ↓  ↵", "on the log: pick a post and open it"],
+  ["f  #  ← →", "on the log: filter, filter by tag, change page"],
+  ["[  ]", "on a post: newer and older post"],
   ["g h  g l  g w  g i", "home, log, wiki and whoami"],
 ];
 
@@ -165,12 +164,6 @@ function classify(page, pages) {
   }
   if (page === BLOG_DIR || pages.some((other) => other !== page && other.startsWith(page))) {
     return "dir";
-  }
-  if (page.startsWith(`${BLOG_DIR}archive/`)) {
-    return "archive";
-  }
-  if (page.startsWith(`${BLOG_DIR}category/`)) {
-    return "category";
   }
   if (page.startsWith(BLOG_DIR)) {
     return "post";
@@ -694,7 +687,10 @@ function onGlobalKey(event) {
     event.stopImmediatePropagation();
     open();
   } else if (event.key === "Escape" && !hasOverlayOpen()) {
-    goUp();
+    const escape = new CustomEvent("tui:escape", { cancelable: true });
+    if (document.dispatchEvent(escape)) {
+      goUp();
+    }
   } else if (event.key === "t") {
     toggleTheme();
   } else if (event.key === "?") {

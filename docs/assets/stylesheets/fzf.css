@@ -192,14 +192,6 @@
   color: var(--ctp-subtext1);
 }
 
-.fzf__icon--archive {
-  color: var(--ctp-peach);
-}
-
-.fzf__icon--category {
-  color: var(--ctp-yellow);
-}
-
 .fzf__icon--section {
   color: var(--ctp-overlay0);
 }

@@ -5,5 +5,3 @@ hide:
 ---
 
 # log
-
-Posts, newest first.

@@ -4,8 +4,8 @@ site_name = "adeildo"
 site_description = "Adeildo's log and wiki: software, setup, opinions and everyday life."
 site_author = "Adeildo"
 copyright = "adeildo"
-extra_css = ["assets/stylesheets/letter.css", "assets/stylesheets/fzf.css"]
-extra_javascript = ["assets/javascripts/katex.js", "assets/javascripts/fzf.js"]
+extra_css = ["assets/stylesheets/letter.css", "assets/stylesheets/fzf.css", "assets/stylesheets/log.css"]
+extra_javascript = ["assets/javascripts/katex.js", "assets/javascripts/fzf.js", "assets/javascripts/log.js"]
 
 nav = [
   { "log" = ["log/index.md"] },
@@ -87,14 +87,9 @@ post_url_format = "{date}/{slug}"
 post_url_date_format = "yyyy"
 post_readtime = true
 post_excerpt = "optional"
-archive_name = "archive"
-archive_url_format = "archive/{date}"
-archive_date_format = "yyyy"
-archive_url_date_format = "yyyy"
-categories_name = "topics"
-categories_url_format = "category/{slug}"
-categories_allowed = ["dev", "life", "opinion", "daily", "setup", "history"]
-pagination_per_page = 10
+archive = false
+categories = false
+pagination = false
 draft_on_serve = true
 
 [project.plugins.tags]

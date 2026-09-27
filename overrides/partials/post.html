@@ -1,15 +1,23 @@
 {% import "partials/locale.html" as locale with context %}
-<li class="log__entry">
-  {{ locale.iso_date(post.config.date.created) }}
-  <span>
-    <a class="log__title" href="{{ post.url | url }}">{{ post.title }}</a>
-    {%- if post.config.draft %}
-      <span class="draft">{{ locale.t("draft") }}</span>
-    {%- endif %}
-  </span>
-  <span class="log__categories">
-    {%- for category in post.categories %}
-      <a href="{{ category.url | url }}">{{ category.title }}</a>
-    {%- endfor %}
-  </span>
+{% set tags = (post.meta.categories or []) + (post.meta.tags or []) %}
+{% set excerpt = post.content | split("</h2>") | last | striptags %}
+<li class="log__entry" data-date="{{ (post.config.date.created | string)[:10] }}" data-tags="{{ tags | join(' ') }}">
+  {{ locale.short_date(post.config.date.created) }}
+  <div class="log__main">
+    <div class="log__head">
+      <a class="log__title" href="{{ post.url | url }}">{{ post.title }}</a>
+      {%- if post.config.draft %}
+        <span class="draft">{{ locale.t("draft") }}</span>
+      {%- endif %}
+      <span class="log__tags">
+        {%- for tag in tags %}
+          <a href="?q=%23{{ tag | urlencode }}" data-tag="{{ tag }}">#{{ tag }}</a>
+        {%- endfor %}
+      </span>
+    </div>
+    <p class="log__excerpt">{{ excerpt | trim }}</p>
+  </div>
+  {%- if post.config.readtime %}
+    <span class="log__readtime">{{ post.config.readtime }} min</span>
+  {%- endif %}
 </li>

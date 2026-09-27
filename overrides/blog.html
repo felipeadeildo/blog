@@ -5,18 +5,34 @@
     <div class="md-content__inner md-typeset">
       {{ page.content }}
       {% if posts %}
-        <ol class="log__entries">
-          {% for post in posts %}
-            {% include "partials/post.html" %}
-          {% endfor %}
-        </ol>
+        <section class="pane" aria-label="posts">
+          <div class="pane__top" hidden>
+            <label class="log__prompt">
+              <span class="log__cwd" aria-hidden="true">{% include ".icons/lucide/folder-open.svg" %}~/log</span>
+              <span class="log__caret" aria-hidden="true">❯</span>
+              <input class="log__filter" type="search" placeholder="filter posts, # for tags" aria-label="filter posts" spellcheck="false" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="log-suggest">
+              <span class="log__count" aria-live="polite"></span>
+            </label>
+            <ul class="log__suggest" id="log-suggest" role="listbox" hidden></ul>
+          </div>
+          <ol class="log__entries">
+            {% set _ = namespace(year = none) %}
+            {% for post in posts %}
+              {% set year = (post.config.date.created | string)[:4] %}
+              {% if year != _.year %}
+                <li class="log__year" aria-hidden="true">{{ year }}</li>
+                {% set _.year = year %}
+              {% endif %}
+              {% include "partials/post.html" %}
+            {% endfor %}
+          </ol>
+          <div class="pane__status" hidden>
+            <nav class="log__pager" aria-label="pages"></nav>
+            <p class="log__keys"></p>
+          </div>
+        </section>
       {% else %}
         <p class="log__empty">total 0</p>
-      {% endif %}
-      {% if pagination %}
-        {% block pagination %}
-          {% include "partials/pagination.html" %}
-        {% endblock %}
       {% endif %}
     </div>
   </div>
