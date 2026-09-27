@@ -1,0 +1,7 @@
+<footer class="md-footer colophon">
+  <a href="{{ nav.homepage.url | url }}">{{ config.site_name }}</a>
+  {% for social in config.extra.social %}
+    <span aria-hidden="true">·</span>
+    <a href="{{ social.link }}" rel="me noopener">{{ social.name }}</a>
+  {% endfor %}
+</footer>

@@ -1,0 +1,38 @@
+{% extends "main.html" %}
+{% import "partials/locale.html" as locale with context %}
+
+{% block container %}
+  <div class="md-content md-content--post" data-md-component="content">
+    <article class="md-content__inner md-typeset letter">
+      {% block content %}
+        <p class="letter__dateline">
+          <a href="{{ page.parent.url | url }}">log</a>
+          <span class="letter__sep" aria-hidden="true">/</span>
+          {{ locale.long_date(page.config.date.created) }}
+          {%- for category in page.categories %}
+            <span class="letter__sep" aria-hidden="true">·</span>
+            <a href="{{ category.url | url }}">{{ category.title }}</a>
+          {%- endfor %}
+          {%- if page.config.readtime %}
+            <span class="letter__sep" aria-hidden="true">·</span>
+            {{ page.config.readtime }} min
+          {%- endif %}
+          {%- if page.config.draft %}
+            <span class="draft">{{ locale.t("draft") }}</span>
+          {%- endif %}
+        </p>
+        {% include "partials/content.html" %}
+        <p class="letter__signature">
+          <span class="letter__closing">{{ page.meta.closing | d(locale.t("closing"), true) }}</span>
+          <span class="letter__name">{{ config.site_author }}</span>
+          {% if page.config.date.updated %}
+            <span class="letter__revised">
+              {{ locale.t("revised") }}
+              {{ locale.long_date(page.config.date.updated) }}
+            </span>
+          {% endif %}
+        </p>
+      {% endblock %}
+    </article>
+  </div>
+{% endblock %}

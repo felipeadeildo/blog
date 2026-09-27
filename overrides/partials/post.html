@@ -1,0 +1,15 @@
+{% import "partials/locale.html" as locale with context %}
+<li class="log__entry">
+  {{ locale.iso_date(post.config.date.created) }}
+  <span>
+    <a class="log__title" href="{{ post.url | url }}">{{ post.title }}</a>
+    {%- if post.config.draft %}
+      <span class="draft">{{ locale.t("draft") }}</span>
+    {%- endif %}
+  </span>
+  <span class="log__categories">
+    {%- for category in post.categories %}
+      <a href="{{ category.url | url }}">{{ category.title }}</a>
+    {%- endfor %}
+  </span>
+</li>

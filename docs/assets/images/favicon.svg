@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="13 14 44 44">
+  <style>
+    .lid { fill: #313244; stroke: #45475a; stroke-width: 1.2; }
+    .screen { fill: #1e1e2e; }
+    .base { fill: #45475a; }
+    .base-edge { fill: #585b70; }
+    .cat { fill: #cba6f7; stroke: #8839ef; stroke-width: 1.4; stroke-linejoin: round; }
+    .tail { fill: none; stroke: #8839ef; stroke-width: 5.2; stroke-linecap: round; }
+    .tail-fill { fill: none; stroke: #cba6f7; stroke-width: 2.8; stroke-linecap: round; }
+    .ear { fill: #f5c2e7; }
+    .paw { fill: #e4d2fb; stroke: #8839ef; stroke-width: 1; }
+    .face { fill: none; stroke: #1e1e2e; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+    .nose { fill: #f5c2e7; }
+    .blush { fill: #f38ba8; opacity: 0.4; }
+    .zz { fill: none; stroke: #b4befe; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+  </style>
+  <path class="tail" d="M45 45 Q55 44.5 54.5 40 Q54 37 51 37.5"/>
+  <path class="tail-fill" d="M45 45 Q55 44.5 54.5 40 Q54 37 51 37.5"/>
+  <path class="cat" d="M15 47 Q14.5 37 19 32 L19.5 24 Q20 22.4 21.5 23.4 L27 28 Q32 27 37 28 L42.5 23.4 Q44 22.4 44.5 24 L45 32 Q49.5 37 49 47 Z"/>
+  <path class="ear" d="M20.6 25.6 L24.8 29 Q22.4 29.8 21 31.4 Z M43.4 25.6 L39.2 29 Q41.6 29.8 43 31.4 Z"/>
+  <path class="face" d="M22.5 37 Q25 39.2 27.5 37 M36.5 37 Q39 39.2 41.5 37"/>
+  <ellipse class="blush" cx="21.5" cy="41" rx="2.6" ry="1.4"/>
+  <ellipse class="blush" cx="42.5" cy="41" rx="2.6" ry="1.4"/>
+  <path class="nose" d="M30.8 39.6 H33.2 L32 41 Z"/>
+  <ellipse class="paw" cx="26" cy="46.6" rx="3.6" ry="2"/>
+  <ellipse class="paw" cx="38" cy="46.6" rx="3.6" ry="2"/>
+</svg>

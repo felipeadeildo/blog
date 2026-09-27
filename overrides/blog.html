@@ -1,0 +1,19 @@
+{% extends "main.html" %}
+
+{% block container %}
+  <div class="md-content log" data-md-component="content">
+    <div class="md-content__inner md-typeset">
+      {{ page.content }}
+      <ol class="log__entries">
+        {% for post in posts %}
+          {% include "partials/post.html" %}
+        {% endfor %}
+      </ol>
+      {% if pagination %}
+        {% block pagination %}
+          {% include "partials/pagination.html" %}
+        {% endblock %}
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}

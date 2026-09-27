@@ -1,0 +1,48 @@
+{% macro render_content(nav_item, ref, kind) %}
+  {% set ref = ref or nav_item %}
+  <span class="md-tabs__icon" aria-hidden="true">
+    {%- if kind == "dir" and ref.active -%}
+      {% include ".icons/lucide/folder-open.svg" %}
+    {%- elif kind == "dir" -%}
+      {% include ".icons/lucide/folder.svg" %}
+    {%- else -%}
+      {% include ".icons/lucide/square-terminal.svg" %}
+    {%- endif -%}
+  </span>
+  {{- ref.title or nav_item.title -}}
+  {%- if kind == "dir" %}/{% endif %}
+{% endmacro %}
+
+{% macro render(nav_item, ref) %}
+  {% set ref = ref or nav_item %}
+  {% set class = "md-tabs__item" %}
+  {% if ref.active %}
+    {% set class = class ~ " md-tabs__item--active" %}
+  {% endif %}
+  {% if nav_item.children %}
+    {% set _ = namespace(index = none) %}
+    {% if "navigation.indexes" in features %}
+      {% for item in nav_item.children %}
+        {% if item.is_index and _.index is none %}
+          {% set _.index = item %}
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+    {% set first = _.index or nav_item.children | first %}
+    {% if first.children %}
+      {{ render(first, ref) }}
+    {% else %}
+      <li class="{{ class }}">
+        <a href="{{ first.url | url }}" class="md-tabs__link md-tabs__link--dir">
+          {{ render_content(first, ref, "dir") }}
+        </a>
+      </li>
+    {% endif %}
+  {% else %}
+    <li class="{{ class }}">
+      <a href="{{ nav_item.url | url }}" class="md-tabs__link md-tabs__link--exec">
+        {{ render_content(nav_item, none, "exec") }}
+      </a>
+    </li>
+  {% endif %}
+{% endmacro %}

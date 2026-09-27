@@ -1,0 +1,33 @@
+{% if page.meta and page.meta.ls %}
+  <nav class="ls" aria-label="{{ config.site_name }}">
+    <p class="ls__prompt" aria-hidden="true">
+      <span class="ls__cwd">~</span>
+      <span class="ls__arrow">❯</span>
+      ls -l
+    </p>
+    <ul class="ls__entries">
+      {% for entry in page.meta.ls %}
+        {% set is_dir = entry.mode[0] == "d" %}
+        <li class="ls__entry">
+          <span class="ls__mode" aria-hidden="true">
+            {%- for char in entry.mode -%}
+              <span class="ls__mode--{{ char | replace('-', 'none') | replace('.', 'none') }}">{{ char }}</span>
+            {%- endfor -%}
+          </span>
+          <span class="ls__user" aria-hidden="true">{{ config.site_name }}</span>
+          <a class="ls__name {{ 'ls__name--dir' if is_dir else 'ls__name--exec' }}" href="{{ entry.link | url }}">
+            <span class="ls__icon" aria-hidden="true">
+              {%- if is_dir -%}
+                {% include ".icons/lucide/folder.svg" %}
+              {%- else -%}
+                {% include ".icons/lucide/square-terminal.svg" %}
+              {%- endif -%}
+            </span>
+            {{ entry.name }}
+          </a>
+          <span class="ls__note"># {{ entry.note }}</span>
+        </li>
+      {% endfor %}
+    </ul>
+  </nav>
+{% endif %}

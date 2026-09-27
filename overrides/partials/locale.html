@@ -1,0 +1,35 @@
+{% set locales = {
+  "pt-BR": {
+    "months": ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"],
+    "date": "{day} de {month} de {year}",
+    "closing": "Abraço,",
+    "revised": "revisado em",
+    "draft": "rascunho",
+  },
+  "en": {
+    "months": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+    "date": "{month} {day}, {year}",
+    "closing": "Cheers,",
+    "revised": "revised on",
+    "draft": "draft",
+  },
+} %}
+{% set current = locales[config.theme.language] | d(locales["en"], true) %}
+
+{% macro t(key) -%}
+  {{ current[key] }}
+{%- endmacro %}
+
+{% macro long_date(value) -%}
+  {%- set iso = value | string -%}
+  {%- set text = current.date
+    | replace("{day}", iso[8:10] | int | string)
+    | replace("{month}", current.months[(iso[5:7] | int) - 1])
+    | replace("{year}", iso[:4]) -%}
+  <time datetime="{{ iso[:10] }}">{{ text }}</time>
+{%- endmacro %}
+
+{% macro iso_date(value) -%}
+  {%- set iso = (value | string)[:10] -%}
+  <time datetime="{{ iso }}">{{ iso }}</time>
+{%- endmacro %}

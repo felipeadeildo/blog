@@ -1,90 +1,109 @@
 [project]
 site_url = "https://adeildo.dev"
-site_name = "Adeildo's Stuff"
-site_description = "Where I express experiences and feeelings;"
-# site_author = "Your name"
-
-# copyright = "Copyright &copy; 2026 Your name"
-
-# repo_url = "https://github.com/user/repo"
-# repo_name = "user/repo"
-# edit_uri = "edit/main/docs/"
+site_name = "adeildo"
+site_description = "Log e wiki do Adeildo sobre desenvolvimento, setup, opiniões e o dia a dia."
+site_author = "Adeildo"
+copyright = "adeildo"
+extra_css = ["assets/stylesheets/letter.css"]
+extra_javascript = ["assets/javascripts/katex.js"]
 
 nav = [
-  { "Get started" = "index.md" },
-  { "Markdown in 5min" = "markdown.md" },
+  { "log" = ["log/index.md"] },
+  { "wiki" = [
+    "wiki/index.md",
+    { "setup" = "wiki/setup/index.md" },
+    { "explicações" = "wiki/explainers/index.md" },
+    { "opiniões" = "wiki/opinions/index.md" },
+  ] },
+  { "whoami" = "whoami/index.md" },
 ]
 
-# extra_css = ["stylesheets/extra.css"]
-# extra_javascript = ["javascripts/extra.js"]
+[project.extra]
+generator = false
+
+[[project.extra.social]]
+icon = "simple/github"
+link = "https://github.com/felipeadeildo"
+name = "github"
+
+[[project.extra.social]]
+icon = "lucide/rss"
+link = "https://adeildo.dev/feed_rss_created.xml"
+name = "rss"
 
 [project.theme]
-# variant = "classic"
-# custom_dir = "overrides"
-# favicon = "images/favicon.png"
-language = "en"
+custom_dir = "overrides"
+language = "pt-BR"
+font = false
+logo = "assets/images/cat.svg"
+favicon = "assets/images/favicon.svg"
 features = [
-  "announce.dismiss",
-  # "content.action.edit",
-  # "content.action.view",
   "content.code.annotate",
   "content.code.copy",
-  "content.code.select",
   "content.footnote.tooltips",
   "content.tabs.link",
   "content.tooltips",
-  # "header.autohide",
-  # "navigation.expand",
-  "navigation.footer",
   "navigation.indexes",
   "navigation.instant",
   "navigation.instant.prefetch",
-  # "navigation.instant.progress",
-  "navigation.path",
-  # "navigation.prune",
   "navigation.sections",
-  # "navigation.tabs",
-  # "navigation.tabs.sticky",
+  "navigation.tabs",
   "navigation.top",
   "navigation.tracking",
   "search.highlight",
-  # "toc.follow",
-  # "toc.integrate",
+  "toc.follow",
 ]
 
-# logo = "assets/logo.png"
-
-# [project.theme.icon]
-# logo = "lucide/smile"
-
-# [project.theme.font]
-# text = "Inter"
-# code = "Jetbrains Mono"
-
-[[project.theme.palette]]
-media = "(prefers-color-scheme)"
-toggle.icon = "lucide/sun-moon"
-toggle.name = "Switch to light mode"
+[project.theme.icon]
+previous = "lucide/arrow-left"
+next = "lucide/arrow-right"
+tag.default = "lucide/hash"
+admonition.note = "lucide/pencil"
+admonition.tip = "lucide/lightbulb"
+admonition.info = "lucide/info"
+admonition.warning = "lucide/triangle-alert"
 
 [[project.theme.palette]]
 media = "(prefers-color-scheme: light)"
-scheme = "default"
-toggle.icon = "lucide/sun"
-toggle.name = "Switch to dark mode"
+scheme = "latte"
+primary = "custom"
+accent = "custom"
+toggle.icon = "lucide/moon"
+toggle.name = "Mudar para o tema escuro"
 
 [[project.theme.palette]]
 media = "(prefers-color-scheme: dark)"
 scheme = "slate"
-toggle.icon = "lucide/moon"
-toggle.name = "Switch to system preference"
+primary = "custom"
+accent = "custom"
+toggle.icon = "lucide/sun"
+toggle.name = "Mudar para o tema claro"
 
-# [[project.extra.social]]
-# icon = "fontawesome/brands/github"
-# link = "https://github.com/user/repo"
+[project.plugins.blog]
+blog_dir = "log"
+blog_toc = false
+post_date_format = "long"
+post_url_format = "{date}/{slug}"
+post_url_date_format = "yyyy"
+post_readtime = true
+post_excerpt = "optional"
+archive_name = "arquivo"
+archive_url_format = "archive/{date}"
+archive_date_format = "yyyy"
+archive_url_date_format = "yyyy"
+categories_name = "assuntos"
+categories_url_format = "category/{slug}"
+categories_allowed = ["dev", "life", "opinion", "daily", "setup", "history"]
+pagination_per_page = 10
+draft_on_serve = true
 
-# [[project.extra.social]]
-# icon = "fontawesome/brands/mastodon"
-# link = "https://fosstodon.org/@user"
+[project.plugins.tags]
+
+[project.plugins.rss]
+match_path = "log/posts/.*"
+date_from_meta.as_creation = "date.created"
+date_from_meta.as_update = "date.updated"
+categories = ["categories", "tags"]
 
 [project.markdown_extensions]
 abbr = {}
@@ -93,9 +112,14 @@ attr_list = {}
 def_list = {}
 footnotes = {}
 md_in_html = {}
-toc.permalink = true
+smarty = {}
+tables = {}
+toc.permalink = "§"
+toc.permalink_title = "Link para esta seção"
+toc.toc_depth = 3
 pymdownx.arithmatex.generic = true
 pymdownx.betterem = {}
+pymdownx.blocks.caption = {}
 pymdownx.caret = {}
 pymdownx.details = {}
 pymdownx.emoji.emoji_generator = "zensical.extensions.emoji.to_svg"
@@ -105,10 +129,9 @@ pymdownx.highlight.line_spans = "__span"
 pymdownx.highlight.pygments_lang_class = true
 pymdownx.inlinehilite = {}
 pymdownx.keys = {}
-pymdownx.magiclink = {}
 pymdownx.mark = {}
 pymdownx.smartsymbols = {}
-# pymdownx.snippets.base_path = "includes"
+pymdownx.snippets = {}
 pymdownx.superfences.custom_fences = [
   { name = "mermaid", class = "mermaid", format = "pymdownx.superfences.fence_code_format" },
 ]
