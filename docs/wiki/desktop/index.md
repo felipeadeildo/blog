@@ -196,6 +196,49 @@ The ones I use all the time. ++super++ is the Windows key.
 
 There's also Restart DMS (++d++), which reloads the bar and everything else DMS draws, without closing any window. Good for when a plugin gets stuck.
 
+### What niri needs around it
+
+niri places windows and that's it. Its wiki keeps a list of [the other programs a desktop needs](https://github.com/niri-wm/niri/wiki/Important-Software), and without them some apps break in odd ways: a file picker that never opens, a login that isn't remembered. Here's what covers each one on my machine:
+
+| What | Why apps need it | What I use |
+| --- | --- | --- |
+| notifications | to tell you things | DMS |
+| portals | file pickers, screen sharing, dark mode for apps | `xdg-desktop-portal-gtk` and `xdg-desktop-portal-gnome` |
+| a secret store | to save passwords and logins, Chrome and Zed use it | `gnome-keyring` |
+| an authentication agent | the password prompt when an app needs root | DMS |
+| Xwayland | to run apps that only speak X11, like Steam | `xwayland-satellite`, from the DMS installer |
+
+DMS covers two of them, and the installer brings `xwayland-satellite`. The rest is one command:
+
+``` sh
+paru -S xdg-desktop-portal-gtk xdg-desktop-portal-gnome gnome-keyring
+```
+
+Nothing to configure after that. niri ships a file that tells each request which portal answers it:
+
+``` ini title="/usr/share/xdg-desktop-portal/niri-portals.conf"
+[preferred]
+default=gnome;gtk; # (1)!
+org.freedesktop.impl.portal.Access=gtk;
+org.freedesktop.impl.portal.Notification=gtk;
+org.freedesktop.impl.portal.Secret=gnome-keyring; # (2)!
+```
+
+1. Ask the GNOME portal first, and fall back to the GTK one. The GNOME portal is the one that does screen sharing, and it opens Nautilus when an app asks you to pick a file.
+2. Saved passwords go to `gnome-keyring`.
+
+### Sharing the screen
+
+Screen sharing in Chrome and Discord goes through the GNOME portal. The app asks, a dialog opens, and you pick a whole monitor or a single window.
+
+!!! tip "niri has a few more tricks for this"
+
+    I haven't set these up, but each one is a few lines in niri's config. The [screencasting page](https://github.com/niri-wm/niri/wiki/Screencasting) has the details.
+
+    - **Hide windows from the stream.** A window rule with `block-out-from "screencast"` shows that window as a black box to whoever is watching, while you still see it normally. Good for a password manager or a chat.
+    - **Switch what you're sharing mid-call.** Pick "niri Dynamic Cast Target" in the dialog, then a key decides what goes out: the focused window (`set-dynamic-cast-window`) or the whole monitor (`set-dynamic-cast-monitor`). No need to stop and share again.
+    - **Fullscreen without taking the screen.** `toggle-windowed-fullscreen` tells an app it went fullscreen while the window stays its normal size. Slides without the browser bar, and the notes still visible next to them.
+
 ## DankMaterialShell
 
 [DankMaterialShell](https://github.com/AvengeMedia/DankMaterialShell), DMS for short, is made by AvengeMedia under the [Dank Linux](https://danklinux.com/) name. niri on its own only places windows. The bar, the launcher, notifications, the lock screen, all of that usually means installing and configuring a separate tool for each one: waybar, mako, swaylock, swayidle and friends. DMS is all of them in one program, with one settings window (++super+comma++). Even the login screen is DMS.
@@ -227,9 +270,17 @@ This one setting is most of why the desktop looks the way it does. Frame mode dr
 
 The theme is set to `dynamic`. DMS pulls the colors out of the wallpaper with [matugen](https://github.com/InioX/matugen) and paints everything with them: the shell, my apps, the terminal, the editors. Change the wallpaper and the whole system follows. I switched the palette style from Tonal Spot to Fidelity, which stays closer to the colors actually in the picture.
 
+GTK apps like Nautilus get the colors through a `gtk.css` that DMS writes into `~/.config/gtk-3.0` and `~/.config/gtk-4.0`. Zed and Ghostty get a theme file of their own.
+
 !!! tip "Colors from the music"
 
     The media player in DMS already picks an accent color from the album art of what's playing. My [Music Theme](#plugins) plugin takes that color and repaints the whole system with it.
+
+The cursor is [Bibata](https://github.com/ful1e5/Bibata_Cursor) Modern Classic, at 24 px. No secret there. I installed it from the AUR and picked it in the DMS settings, under Theme & Colors.
+
+``` sh
+paru -S bibata-cursor-theme-bin
+```
 
 ### The bar
 
