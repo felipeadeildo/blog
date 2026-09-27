@@ -62,18 +62,6 @@
   border-bottom: 1px solid var(--ctp-surface0);
 }
 
-.fzf__dots {
-  width: 0.7em;
-  height: 0.7em;
-  background-color: var(--ctp-red);
-  border-radius: 50%;
-  box-shadow: 1.1em 0 0 var(--ctp-yellow), 2.2em 0 0 var(--ctp-green);
-}
-
-.fzf__name {
-  margin-left: 2.4em;
-}
-
 .fzf__body {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr);

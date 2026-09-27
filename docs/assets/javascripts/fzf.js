@@ -344,7 +344,7 @@ function build() {
   dialog.setAttribute("aria-label", "search terminal");
 
   const titlebar = element("div", "fzf__titlebar");
-  titlebar.append(element("span", "fzf__dots"), element("span", "fzf__name", "fzf ~/adeildo"));
+  titlebar.append(element("span", "fzf__name", "fzf ~/"));
 
   const prompt = element("label", "fzf__prompt");
   const input = element("input", "fzf__input");
