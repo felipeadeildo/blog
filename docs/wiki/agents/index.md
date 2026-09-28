@@ -51,7 +51,8 @@ Each extension is one line in `settings.json`. `pi install` writes the line for 
   "npm:pi-mcp-adapter",
   "npm:pi-open-tui",
   "npm:pi-memory",
-  "git:github.com/felipeadeildo/pi-use-anthropic-subscription.git" // (1)!
+  "git:github.com/felipeadeildo/pi-use-anthropic-subscription.git", // (1)!
+  "npm:pi-subagents"
 ],
 "extensions": [
   "/home/adeildo/Projects/pi-ask-permission/src/index.ts" // (2)!
@@ -162,6 +163,16 @@ Every Pi session starts knowing nothing about the last one. [pi-memory](https://
 
 This is why I don't repeat myself anymore. "Commits are one line, no body" and "always `uv add`, never edit `pyproject.toml` by hand" were said once, and they stuck.
 
+### pi-subagents
+
+"Read these five files and tell me what matters" puts five files in my context when all I wanted was two lines of answer. [pi-subagents](https://github.com/nicobailon/pi-subagents) lets Pi start a child session for that. The child gets a clean context and the task, and only its result comes back.
+
+It ships with ready-made agents, `scout`, `researcher`, `worker`, `reviewer`, `oracle` and a few more. I barely touch them. What I use it for is the screen before the child starts. Pi writes the task and shows it to me, and I pick the model and fix whatever the task got wrong. The main session stays on Opus, and "find where this is configured" goes to a smaller, cheaper model, with instructions I'd sign.
+
+I ask for it in plain words, like "hand this to a subagent". Pi doesn't delegate by itself because a task looks big. Until I ask, it only sees a tiny tool that turns the feature on, so the full tool schema stays out of sessions that never use it.
+
+Children can also run in the background. They show up below the editor while they work, and `/subagents-fleet` opens each one so I can read what it's doing, steer it or stop it.
+
 ### rpiv-ask-user-question
 
 When I ask for something that could go two ways, I'd rather the agent ask than guess. [rpiv-ask-user-question](https://github.com/juicesharp/rpiv-mono) gives it a way to. It opens up to four questions, each with two to four options I pick with the arrows, and there's always a field to type my own answer.
@@ -186,13 +197,12 @@ npx skills add anthropics/skills
 
 ## What's still missing
 
-All of this assumes one agent, in one terminal, with me sitting in front of it. That's not how I want to work forever. There's a lot I'd like to control and can't yet.
+All of this assumes one session, in one terminal, with me sitting in front of it. That's not how I want to work forever. There's a lot I'd like to control and can't yet.
 
-- **Subagents.** I want to hand part of a job to another agent with a clean context, like "read these five files and tell me what matters", and get back only the answer. Pi leaves this to extensions on purpose. [pi-subagents](https://pi.dev/packages/pi-subagents) is the most used, and Pi itself ships [an example](https://github.com/earendil-works/pi/tree/main/packages/coding-agent/examples/extensions/subagent) of how to build one.
 - **Sessions that talk.** Apart from what pi-memory carries, sessions don't know the others exist. I want to pass what one found to another, or have one ask another for help. [pi-intercom](https://pi.dev/packages/pi-intercom) sends messages between two sessions on the same machine. [pi-messenger](https://github.com/nicobailon/pi-messenger) puts several agents in a shared room where they claim tasks and reserve files so they don't step on each other.
 - **My phone.** Start something at the computer, walk away, and still follow it, approve a permission or send the next message from wherever I am. [remote-pi](https://pi.dev/packages/remote-pi) pairs a phone with a QR code, and it also lets local agents talk to each other. [Tailscale](../workbench/index.md#command-line-tools) is already installed here, which could be another way in.
 
-I haven't picked any of them. They overlap a lot, and I don't want five extensions that each do a third of the job and don't know about each other. I'm still figuring out how the pieces should fit.
+Subagents used to be on this list. [pi-subagents](#pi-subagents) covers them, but every child still belongs to one parent session on one machine. For the rest I haven't picked anything. They overlap a lot, and I don't want five extensions that each do a third of the job and don't know about each other. I'm still figuring out how the pieces should fit.
 
 ### Maybe one package for all of it
 
