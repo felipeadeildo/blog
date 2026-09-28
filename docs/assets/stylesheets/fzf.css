@@ -365,4 +365,16 @@
   .fzf__footer {
     display: none;
   }
+
+  .fzf__dialog {
+    height: min(560px, 60dvh);
+    font-size: 0.72rem;
+  }
+}
+
+/* iOS amplia a página quando o foco cai num campo com menos de 16px. */
+@media (hover: none) and (pointer: coarse) {
+  .fzf__input {
+    font-size: 16px;
+  }
 }

@@ -435,12 +435,35 @@
 }
 
 @media screen and (max-width: 44.9375em) {
+  /* Data e tempo de leitura na mesma linha, em cima; título, resumo e tags ocupam a largura toda. */
   .md-typeset ol.log__entries > .log__entry {
     grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.15em 1.6ch;
+    padding: 0.8em 0.5em;
   }
 
   .log__entry > time {
+    grid-row: 1;
+    grid-column: 1;
+  }
+
+  .log__readtime {
+    grid-row: 1;
+    grid-column: 2;
+  }
+
+  .log__main {
+    grid-row: 2;
     grid-column: 1 / -1;
+  }
+
+  .log__head {
+    flex-direction: column;
+    gap: 0.25em;
+  }
+
+  .md-typeset .log__excerpt {
+    hyphens: none;
   }
 
   .log__cwd,
@@ -449,6 +472,15 @@
     display: none;
   }
 
+  .pane__status {
+    justify-content: center;
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .md-typeset .log__filter {
+    font-size: 16px;
+  }
 }
 
 .meta {
@@ -680,4 +712,29 @@
   max-width: none;
   text-align: left;
   font-style: normal;
+}
+
+/* Em tela estreita o SVG encolhe pela metade, então o texto e os pontos crescem em unidades do
+   desenho para continuar legíveis, e o rótulo que colidiria com o do cutover sai. */
+@media screen and (max-width: 44.9375em) {
+  .parity-chart__svg :is(.axis, .mark-label) {
+    font-size: 19px;
+  }
+
+  .parity-chart__svg .mark-label--minor {
+    display: none;
+  }
+
+  .parity-chart__svg .dot {
+    r: 5px;
+  }
+
+  .parity-chart__svg .done-line {
+    stroke-width: 3.5;
+  }
+
+  .md-typeset .parity-chart__legend {
+    flex-wrap: wrap;
+    gap: 0.3em 1.25em;
+  }
 }

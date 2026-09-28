@@ -198,6 +198,12 @@
   padding-inline: 0.8rem;
 }
 
+/* O container do post é flex em coluna; um bloco de código comprido fazia o artigo crescer até a
+   linha mais longa e passar da tela. Como bloco, o artigo respeita a largura e o código rola. */
+.md-content--post {
+  display: block;
+}
+
 .md-main__inner > .md-content--post > .md-content__inner {
   margin-left: auto;
 }
@@ -230,7 +236,7 @@
 
 .md-typeset h1 {
   margin: 0 0 0.9em;
-  font-size: 2.2em;
+  font-size: clamp(1.75em, 1.3em + 1.6vw, 2.2em);
   font-weight: 650;
   line-height: 1.12;
   letter-spacing: -0.035em;
@@ -238,7 +244,7 @@
 
 .md-typeset h2 {
   margin: 2.2em 0 0.6em;
-  font-size: 1.45em;
+  font-size: clamp(1.3em, 1.15em + 0.6vw, 1.45em);
   font-weight: 620;
   line-height: 1.25;
   letter-spacing: -0.025em;
@@ -583,14 +589,29 @@
   font-style: italic;
 }
 
+/* Celular: cada entrada vira nome em cima e comentário embaixo, sem hifenizar. */
 @media screen and (max-width: 44.9375em) {
   .md-typeset ul.ls__entries {
-    grid-template-columns: repeat(2, auto);
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 0.9em;
+    margin-top: 0.6em;
+  }
+
+  .md-typeset .ls__entry {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    line-height: 1.5;
   }
 
   .ls__mode,
   .ls__user {
     display: none;
+  }
+
+  .ls__note {
+    padding-left: 2.4ch;
+    hyphens: none;
   }
 }
 
@@ -655,6 +676,22 @@
   }
 }
 
+/* No toque não há teclado: a tecla vira palavra e a ajuda, que só lista atalhos, sai. */
+@media (hover: none) and (pointer: coarse) {
+  .md-header__key kbd,
+  .md-header__key[data-fzf="help"] {
+    display: none;
+  }
+
+  .md-header__key span {
+    display: inline;
+  }
+
+  .md-header__key {
+    padding: 0.4rem 0.5rem;
+  }
+}
+
 .md-header__button.md-logo img {
   height: 1.7rem;
 }
@@ -701,6 +738,81 @@
 @media screen and (min-width: 76.25em) {
   .md-header {
     box-shadow: none;
+  }
+}
+
+/* Tela estreita: o gato fica, as abas continuam numa linha só embaixo do cabeçalho e o menu, que
+   guarda o sumário da página, vai para a direita e abre do lado dele. */
+@media screen and (max-width: 76.1875em) {
+  .md-header__button.md-logo {
+    display: inline-block;
+  }
+
+  .md-header__button.md-logo img {
+    height: 1.5rem;
+  }
+
+  .md-header__title {
+    margin-left: 0.2rem;
+  }
+
+  .md-header__button[for="__drawer"] {
+    order: 99;
+    margin-inline: 0 0.2rem;
+    color: var(--ctp-subtext0);
+  }
+
+  .md-header__keys {
+    gap: 0.1rem;
+    padding-right: 0;
+  }
+
+  .md-tabs {
+    display: block;
+  }
+
+  .md-tabs__list {
+    display: flex;
+    gap: 1.2rem;
+    margin: 0;
+    padding-inline: 0.8rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .md-tabs__item {
+    height: 2.1rem;
+    padding: 0;
+  }
+
+  .md-tabs__link {
+    margin-top: 0.6rem;
+    font-size: 0.66rem;
+  }
+
+  [dir="ltr"] .md-sidebar--primary {
+    right: -12.1rem;
+    left: auto;
+    background-color: color-mix(in srgb, var(--ctp-base) 88%, transparent);
+    border: 1px solid var(--ctp-surface0);
+  }
+
+  [data-md-toggle="drawer"]:checked ~ .md-container .md-sidebar--primary {
+    box-shadow: none;
+    transform: translateX(-12.5rem);
+  }
+
+  .md-nav--primary .md-nav__title[for="__drawer"] {
+    color: var(--ctp-text);
+    font-size: 0.7rem;
+    font-weight: 620;
+    background: transparent;
+    border-bottom: 1px solid var(--ctp-surface0);
+  }
+
+  .md-nav--primary .md-nav__link {
+    font-family: var(--md-code-font-family);
+    font-size: 0.66rem;
   }
 }
 
