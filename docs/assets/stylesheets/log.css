@@ -628,3 +628,56 @@
     transition: none;
   }
 }
+
+/* Parity chart in the Next.js migration post */
+.md-typeset .parity-chart {
+  margin: 2em 0;
+  font-size: 0.75rem;
+  color: var(--ctp-subtext0);
+}
+
+.md-typeset .parity-chart__legend {
+  display: flex;
+  gap: 1.25em;
+  margin-bottom: 0.5em;
+}
+
+.md-typeset .parity-chart__legend span::before {
+  content: "";
+  display: inline-block;
+  width: 0.7em;
+  height: 0.7em;
+  margin-right: 0.4em;
+  border-radius: 2px;
+  vertical-align: -0.05em;
+  background: var(--swatch);
+}
+
+.md-typeset .parity-chart .is-done { --swatch: var(--ctp-mauve); }
+.md-typeset .parity-chart .is-partial { --swatch: color-mix(in srgb, var(--ctp-mauve) 35%, transparent); }
+.md-typeset .parity-chart .is-todo { --swatch: var(--ctp-surface0); }
+
+.md-typeset .parity-chart__svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.parity-chart__svg .grid { stroke: var(--ctp-surface1); stroke-width: 1; }
+.parity-chart__svg .axis { fill: var(--ctp-subtext0); font-size: 11px; }
+.parity-chart__svg .todo { fill: var(--ctp-surface0); opacity: 0.6; }
+.parity-chart__svg .partial { fill: color-mix(in srgb, var(--ctp-mauve) 35%, transparent); }
+.parity-chart__svg .done { fill: color-mix(in srgb, var(--ctp-mauve) 70%, transparent); }
+.parity-chart__svg .done-line { fill: none; stroke: var(--ctp-mauve); stroke-width: 2.5; stroke-linejoin: round; }
+.parity-chart__svg .dot { fill: var(--ctp-base); stroke: var(--ctp-mauve); stroke-width: 2; cursor: default; }
+.parity-chart__svg .dot:hover { fill: var(--ctp-mauve); }
+.parity-chart__svg .mark { stroke: var(--ctp-overlay0); stroke-dasharray: 3 3; }
+.parity-chart__svg .mark-label { fill: var(--ctp-text); font-size: 11px; }
+
+.md-typeset .parity-chart figcaption {
+  margin-top: 0.75em;
+  max-width: none;
+  text-align: left;
+  font-style: normal;
+}
