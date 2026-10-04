@@ -672,21 +672,65 @@ O plano inteiro, com o porquê de cada item, está no [`ROADMAP.md`](https://git
 
 ## Considerações
 
-Antes que alguém venha: eu não me acho o dono da cocada preta. Faço isso porque são as minhas opiniões. Não gostou? Discorda? Faz um fork, faz melhor, eu não tô nem aí. Ou melhor: abre um PR lá kkkkk.
+Tenho opinião forte sobre muita coisa aqui, deu pra perceber. Mas opinião forte não é o mesmo que saber tudo, e seria muita prepotência minha fechar este post achando que eu sou melhor que a IA.
 
-A ideia aqui foi mostrar como eu enxergo essas novidades de IA, e como várias delas são bem slop. Lembra da skill? Um prompt em `.md` hospedado em algum lugar. Uma forma legal de dar ++ctrl+c++ ++ctrl+v++, grande coisa.
+Não sou. No máximo, sou bem mais eficiente: meu cérebro roda com uns 20 watts. Guardo mais contexto do que qualquer LLM que existe hoje, e o meu retrieval é muito melhor. Uma conversa de três anos atrás volta inteira por causa de um cheiro. Por outro lado, sou lento pra caramba em muita coisa em que o modelo é melhor que eu, com folga: ler vinte arquivos em segundos, escrever trezentas linhas sem errar um nome, fazer a mesma refatoração em cinquenta lugares sem perder a paciência.
 
-Também não sou portador de todo o conhecimento do mundo, e tô bem longe do estado da arte dos "workflows agênticos galácticos do improvement loop dos deuses". Tem muita coisa que eu ainda não sei direito como funciona. Mas o que eu uso tem me servido muito bem até aqui.
+Então a ideia nunca foi escolher um lado. É juntar o melhor de mim com o melhor do modelo, pra essa porra toda render mais. Eu entro com a intenção, o contexto e o julgamento, e ele entra com a velocidade. O harness é só o encaixe entre os dois.
 
-Só tem uma coisa que não pode quebrar:
+### O que eu ainda não sei (e quero muito aprender)
 
-!!! danger "A responsabilidade é sua"
+E tem muita coisa que eu não sei. O harness resolve o meu dia a dia, mas é o arroz com feijão. Enquanto isso, a galera está fazendo coisa bem mais interessante, e é pra onde a minha curiosidade está indo:
 
-    Fazer algo de qualidade não é responsabilidade da IA. **É sua.** Se você não sabe, numa camada boa o bastante, que caralhos está acontecendo na sua aplicação, na arquitetura, no que você está desenvolvendo, a chance de dar merda é enorme. E não por incapacidade da IA: por incapacidade sua. É skill issue.
+- :lucide-brain: **Memória de longo prazo.** A minha é markdown com busca. O [Zep](https://arxiv.org/abs/2501.13956) guarda a memória como um grafo temporal, em que um fato que mudou invalida o antigo em vez de competir com ele. A Letta faz [sleep-time compute](https://www.letta.com/blog/sleep-time-compute/): o agente reorganiza a própria memória no tempo ocioso. E o [AgeMem](https://aclanthology.org/2026.acl-long.981/) transforma guardar, buscar e esquecer em tools, e treina o modelo pra decidir quando usar cada uma.
+- :lucide-graduation-cap: **Aprender comigo.** Lembrar não é obedecer. Um [paper de junho](https://arxiv.org/abs/2606.13174) mostra que, mesmo com memória, 57,5% das preferências que o usuário já tinha corrigido continuavam sendo violadas. A proposta deles é minerar as correções da conversa e compilar cada uma numa checagem que roda antes do agente dar a tarefa por terminada. O [continualcode](https://github.com/razor-ai/continualcode) vai mais longe: quando você nega uma tool com um motivo, ele dá um passo de gradiente num LoRA e tenta de novo. Meu `no` com nota é exatamente esse sinal, e hoje ele morre no fim da sessão.
+- :lucide-repeat: **Desenvolver em loop.** O [Ralph](https://ghuntley.com/ralph/), do Geoffrey Huntley, na forma mais pura, é isso aqui: `while :; do cat PROMPT.md | claude-code ; done`. Parece piada, e mesmo assim tem gente entregando repositório inteiro durante a noite com ele. O engenheiro para de escrever código e passa a programar o loop.
+- :lucide-factory: **A fábrica de software.** A Anthropic botou [16 agentes em paralelo](https://www.anthropic.com/engineering/building-c-compiler) pra escrever um compilador de C em Rust: umas 2 mil sessões em duas semanas, quase US$ 20 mil, e saíram 100 mil linhas que compilam o Linux 6.9. O Cursor deixou centenas de agentes rodando por quase uma semana e saiu [um navegador do zero](https://cursor.com/blog/scaling-agents), com mais de um milhão de linhas. A pergunta que fica: com dinheiro infinito, dá pra fazer software infinitamente bom?
+- :lucide-git-pull-request: **Revisar PR.** Se o agente escreve mil linhas por hora, o gargalo vira quem revisa. A resposta da vez é quebrar o PR gigante numa [pilha de PRs pequenos](https://github.blog/engineering/turn-one-giant-ai-generated-pull-request-to-a-reviewable-stack/), cada um revisável sozinho. Ainda não sei qual é o meu jeito de revisar rápido sem mentir pra mim mesmo.
+- :lucide-messages-square: **Agentes que conversam e se organizam.** O [Gas Town](https://yegge.ai/essays/welcome-to-gas-town/), do Steve Yegge, orquestra 20 a 30 instâncias de Claude Code de uma vez ("Kubernetes e Temporal tiveram um filho feio", nas palavras dele). O [A2A](https://a2a-protocol.org/latest/) quer ser o protocolo pra agentes de fornecedores diferentes conversarem. Eu ainda não consigo fazer duas sessões minhas trocarem um bilhete.
+- :lucide-smartphone: **Acesso remoto.** O Claude Code já deixa [continuar uma sessão local pelo celular](https://code.claude.com/docs/en/remote-control). No meu roadmap isso ainda é um item `later`, com o Tailscale como provável porta de entrada.
 
-No fundo, é o gap de novo. Ele é seu de fechar. O harness só deixa isso mais barato.
+!!! question "Não revisar PR? Calma lá"
 
-E fica o convite: quem quiser colaborar com ideias, chega junto. A proposta é fazer algo bom de verdade, com carinho, pensando na experiência de cada feature. Não é ter feature por ter: é implementar coisa que **nós mesmos** usaríamos no dia a dia, saca? Bem fechado, com começo, meio e fim.
+    A [fábrica da StrongDM](https://factory.strongdm.ai/) tem duas regras: código não pode ser escrito por humano, e código não pode ser **revisado** por humano. E uma métrica: se você não gastou pelo menos US$ 1.000 em tokens hoje, por engenheiro, a sua fábrica tem o que melhorar.
+
+    Eu sou bem cético com isso. Não revisar código me parece estranho, e bem slop. Mas o que eles colocam no lugar da revisão é interessante: cenários de ponta a ponta guardados **fora** do repositório, como um holdout set, pra que o agente não consiga reescrever o teste pra passar. Ou seja: eles não tiraram a verificação, trocaram quem verifica. Ainda não sei se confio nisso. Mas quero entender antes de descartar.
+
+#### Será que dá pra juntar tudo com evals?
+
+Olhando a lista de novo, tem um padrão. O que separa cada uma dessas ideias de um hype é saber **medir** se funcionou:
+
+```mermaid
+flowchart TB
+    E(["evals"])
+    E --- M["memória<br/>lembrou do que importava?"]
+    E --- A["aprender comigo<br/>parou de repetir o erro?"]
+    E --- L["loop<br/>sabe quando parar?"]
+    E --- F["fábrica<br/>os cenários fora do repo"]
+    E --- R["revisão<br/>o que eu preciso olhar?"]
+    E --- J["o juiz<br/>concorda comigo?"]
+```
+/// caption
+Sem um jeito de medir, cada uma dessas ideias é só uma opinião com mais tokens.
+///
+
+O dry run do meu juiz já é um eval tosco: ele dá o veredito, eu decido, e eu conto quantas vezes a gente concordou. A Anthropic tem um [bom texto sobre evals pra agentes](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents), e eu desconfio que o próximo passo do harness passa por aí. Ainda não sei como. É o que eu quero descobrir.
+
+Sobre o slop: continuo achando que muita coisa nessa área é nome bonito pra pouca coisa. Skill é um prompt em `.md`, e eu sigo instalando várias, porque um prompt bem escrito, que alguém já testou, economiza meu tempo. Dá pra achar o hype exagerado e usar a ferramenta mesmo assim.
+
+### O gap continua sendo nosso
+
+!!! danger "Importante"
+
+    O modelo escreve mais rápido que eu, mas quem responde pelo que vai pra produção sou eu. Quando eu não entendo o que está acontecendo na aplicação, na arquitetura, no que estou construindo, o problema raramente é o modelo: é o gap que eu deixei aberto. O harness não fecha ele por mim. Só deixa mais barato eu fechar.
+
+### Discorda? Melhor ainda
+
+!!! question "Bora conversar"
+
+    Nada disso é a forma certa de usar agente. É a forma que tem funcionado pra mim, hoje. Se você acha que eu errei em alguma coisa, ou faz diferente e funciona, eu quero muito saber. Seria do caralho ter essa discussão com gente que pensa diferente de mim.
+
+    Abre uma [issue](https://github.com/felipeadeildo/pi-harness/issues) ou um [PR](https://github.com/felipeadeildo/pi-harness/pulls) no pi-harness, ou me chama pra conversar. A ideia é construir com carinho, pensando na experiência de cada feature, coisa que **nós mesmos** usaríamos no dia a dia. Com começo, meio e fim.
 
 É isso. Pra cima! Bora, biu!
 
