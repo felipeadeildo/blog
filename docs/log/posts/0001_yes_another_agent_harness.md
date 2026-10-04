@@ -21,7 +21,12 @@ closing: See you next time!
 
 Eu sei, eu sei. Sai um harness novo por semana, e cada um jura que é o definitivo. Esse aqui não é definitivo. É **o meu**: um punhado de extensões em cima do [pi](https://pi.dev) que fazem o agente pedir licença, perguntar em vez de chutar, e mostrar o que está acontecendo.
 
-Mas antes de chegar nele, vale entender de onde vêm as opiniões que ele carrega. E, de quebra, desmistificar essa história de "dar ferramentas a uma IA". Spoiler: é regex. Sempre foi regex.
+Mas antes de chegar nele, vale entender de onde vêm as opiniões que ele carrega. E, de quebra, desmistificar essa história de "dar ferramentas a uma IA". Spoiler:
+
+![Sempre foi regex!](https://i.imgflip.com/b2oes3.jpg){ loading=lazy width="600" }
+/// caption
+Sempre foi regex em cima de texto!
+///
 
 <!-- more -->
 
