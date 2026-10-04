@@ -148,7 +148,7 @@ flowchart LR
 Em cima, zero camadas de interpretação. Embaixo, uma camada, e um buraco.
 ///
 
-O problema é essa camada no meio (uma camisinha entre você e o código, basicamente). Quando você escreve o código, não tem interpretação nenhuma: você **é** a intenção, você é a janela de contexto, você sabe onde quer chegar. E quando falta alguma coisa, suas sinapses fazem o retrieval e fecham o gap na hora.
+O problema é essa camada no meio (uma camada entre você e o código, basicamente). Quando você escreve o código, não tem interpretação nenhuma: você **é** a intenção, você é a janela de contexto, você sabe onde quer chegar. E quando falta alguma coisa, suas sinapses fazem o retrieval e fecham o gap na hora.
 
 O LLM só tem o prompt. E o prompt nunca é tão profundo quanto o que está na sua cabeça, porque a gente é preguiçoso e odeia escrever especificação. Aí ele escreve diferente do que você imaginou. Não porque é burro: porque faltou informação. E, por design, ele não fecha esse gap sozinho, porque o que falta só existe na sua cabeça.
 
