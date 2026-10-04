@@ -3,6 +3,7 @@ draft: true
 date:
   created: 2026-10-03
 slug: yes-another-agent-harness
+description: Do script que resolvia exercício da FGV com GPT-3.5 até um harness próprio em cima do pi. E por que "dar ferramentas a um LLM" sempre foi só regex em cima de texto.
 categories:
   - dev
 tags:
@@ -12,332 +13,688 @@ tags:
 closing: See you next time!
 ---
 
+# Sim, outro harness de coding agent
 
-# Sim, outro "harnes de codign agent"
+Eu sei, eu sei. Sai um harness novo por semana, e cada um jura que é o definitivo. Esse aqui não é definitivo. É **o meu**: um punhado de extensões em cima do [pi](https://pi.dev) que fazem o agente pedir licença, perguntar em vez de chutar, e mostrar o que está acontecendo.
 
-## Um pouco de historia
+Mas antes de chegar nele, vale entender de onde vêm as opiniões que ele carrega. E, de quebra, desmistificar essa história de "dar ferramentas a uma IA". Spoiler: é regex. Sempre foi regex.
 
-Quando eu comecei a programar, em meados de 2020 quando finalmente tive meu primeiro notebook, eu passei por maus bocados fazendo meio mundo de scripts python para automatizar um monte de tarefas simplesmente dando skip em tudo que se diz respeito ao "python profissional", sem saber oq era classe, modulo, tudo era one-file-script haha, bons tempos.
+<!-- more -->
 
-De alguma forma eu conseguia olhar para um script de 3k de linhas, cheio de repeticao, variaveis mal nomeadas, um monte de funcoes espalahadas pelo codigo, tem type-hint, sem teste, sem nada! Apenas um bom e velho codigo que de alguma forma, eu, no apice dos meus 12 anos conseguia de alguma forma decorar tudo, saber onde tava cada coisa e manter aquilo dali funcionando e lencando features como louco hahaha.
+!!! abstract "Sem tempo? O post em quatro linhas"
 
-Bons tempos, talvez de la pra ca eu tenha tido um downgrade, hoje eu sinto nojo de codebase daquele nivel e simplesmente :stars:nao consigo entender:stars:, hahahaa.
+    - Programar é traduzir **intenção** em código. Um LLM é um interpretador de intenção, e o problema dele é o **gap**: tudo que estava na sua cabeça e não coube no prompt.
+    - "Tool calling" é um completador de texto rodando em loop, com uma regex em cima. Skills, workflows e companhia são nomes bonitos pra isso.
+    - Então um bom harness não é o que te tira do loop. É o que deixa **barato entrar nele**: negar com um motivo, responder uma pergunta, ver o que está rodando.
+    - Daí nasceu o [`@adeildo/pi-harness`](https://github.com/felipeadeildo/pi-harness). Não é fork: `pi install npm:@adeildo/pi-harness` e pronto.
 
-De qualqer forma, a questao eh que eu fui evoluindo e entendendo a motivacao de cada coisa, oq elas evitavam, pq eu que preciso de testes? pq eu eu preciso de typechecking? pq que eu preciso saber modularizar meu codigo?
+## De onde vem essa mania de opinar
 
-E eu amava fazer isso e repensar sempre: como eu posso reescrever isso daqui?
+### Um script de 3 mil linhas e zero vergonha
 
-Na pratica, eu nunca fiz um projeto exatamente igual ao outro, apenas mudando variaveis... fiz varios projetos e todos eles seguiam alguma regra distinta, framework, capacidades, formas de escrever... isso evoluiu bastante ao longo do tempo e continua mudando - apesar da IA hahaha;
+Comecei a programar lá pra 2020, quando finalmente tive meu primeiro notebook. Saí escrevendo meio mundo de script Python pra automatizar tudo que aparecia na frente, e pulando, com muito orgulho, tudo que dizia respeito a "Python profissional". Não sabia o que era classe, o que era módulo... era tudo one-file-script.[^one-file]
 
-Exemplo dessa pratica foi [este script de download de cursos da rocketseat](https://gist.github.com/felipeadeildo/961587b1f5660a5db42102666e9884d0?permalink_comment_id=5067970#gistcomment-5067970), um dos poucos dessa categoria que deixei publico (you know why, dont you?). Onde, la no final tem alguns comentarios de como poderiamos abstrair... escrevi aquele codigo pensando: e se fizessemos uma representacao de uma plataforma de curso como uma arvore? cada no so precisa de X informacao e cospe Y coisa... e as folhas sao, essencialmente, videos / materiais baixados.
+E de alguma forma funcionava. Eu olhava pra um script de 3 mil linhas, cheio de repetição, variável mal nomeada, função espalhada pra todo lado, sem type hint, sem teste, sem nada, e do alto dos meus 12 anos decorava tudo, sabia onde estava cada coisa e continuava lançando feature como um louco.
 
+Bons tempos. Talvez de lá pra cá eu tenha tido um downgrade: hoje eu olho pra uma codebase daquelas e simplesmente :sparkles: não consigo entender :sparkles: hahaha.
 
-A conclusao disso dai eh: eu sempre questionei muito a qualidade do que eu fazia... por um lado isso era bom por me manter sempre atualizado, e por outro... perigoso pq eu poderia pegar um projeto novo - como [este daqui](https://github.com/NES-Collaborate/nes-website) - onde mesmo sem dominar total mente a tecnologia, fui la, meti a cara me forcando a aprneder rapidamente e passar dia e noite construindo enquanto aprendia mais sobre a propria tecnologia hahaha.
+### Perguntar "por quê?" pra tudo
 
-Esse questionamento continuo me deu algumas opinioes - e continuam a forjar - que podem ser consideradas fortes, uma alta inflexibilidade a adotar coisas simplesmente pelo hype e de ter que saber oq esta acontecendo under the hood a fim de comecar a utilizar.
+O que mudou foi que eu fui entendendo a motivação de cada coisa, e o que cada uma evitava. Por que eu preciso de teste? Por que eu preciso de type checking? Por que eu preciso modularizar? E a pergunta que eu mais gostava de fazer: ==como eu reescreveria isso aqui?==
 
-Opiniao sobre stack, sobre ferramentas, sobre formas de desenvolver, fluxos e coisas desse tipo.
+Eu nunca fiz dois projetos iguais trocando só as variáveis. Cada um seguia uma regra diferente: framework, capacidades, jeito de escrever. Isso mudou muito com o tempo e continua mudando (apesar da IA).
 
-E pq nao, opinar no que se eh necessario para um "bom" - segunddo *MEUS* termos - harness?
+Um exemplo é [este script que baixa cursos da Rocketseat](https://gist.github.com/felipeadeildo/961587b1f5660a5db42102666e9884d0?permalink_comment_id=5067970#gistcomment-5067970), um dos poucos dessa categoria que deixei público (you know why, don't you?). Lá no final tem uns comentários meus sobre como abstrair aquilo: e se uma plataforma de curso fosse uma **árvore**?
 
-## E Deus disse: e haja AI!
+```mermaid
+flowchart LR
+    P["plataforma"] --> C1["curso"]
+    P --> C2["curso"]
+    C1 --> M1["módulo"]
+    C1 --> M2["módulo"]
+    M1 --> A1["aula"]
+    M1 --> A2["aula"]
+    A1 --> V["video.mp4"]
+    A1 --> D["material.pdf"]
+```
+/// caption
+Cada nó só precisa saber listar os filhos. As folhas viram arquivo no disco.
+///
 
-No comeco de 2023 quando saiu o primeiro modelo de LLM - mainstream, at leat - introduzido pela OpenAI: o GPT 3.5. <!-- TODO: verificar data e modelo -->
+Esse questionamento tem dois lados. O bom: me mantém atualizado. O perigoso: me faz pegar um projeto novo, tipo [este aqui](https://github.com/NES-Collaborate/nes-website), sem dominar a tecnologia, e meter a cara mesmo assim, passando dia e noite construindo enquanto aprendo a própria ferramenta.
 
-Eu estava fazendo curso de verao na FGV EMAp de dois cursos:
-1. Introducao a programacao com Python [easy easy, estava fazendo so para ter horas de curso]
-2. Analise Real [puta que pariu, que curso complicado, eu tava morrendo, algm me ajuda]
+E ele me deixou com algumas opiniões que dá pra chamar de fortes, e que continuam sendo forjadas: sobre stack, ferramenta, jeito de desenvolver, fluxo de trabalho. Uma alergia a adotar coisa só pelo hype, e a mania de precisar saber o que acontece under the hood antes de começar a usar.
 
-hahaha, no meio disso tudo, apareceu o gpt 3.5... como eu tava com muito tempo ne - contem ironia - resolvi pegar uma chave de api, escrever um simples script:
+Então, por que não opinar sobre o que faz um harness ser "bom"? Nos **meus** termos, claro.
 
-passo 1: logar na minha conta fgv
-passo 2: listar exercicios nao resolvidos
-passo 3: para cada um, submeter chamada de api do enunciado, e exemplos de entrada e saida e passar pra openai
-passo 4: apos ter sido escrito, submeter codigo gerado + verificacoes como solucao do exercicio.
+## E Deus disse: haja IA!
 
-e foi assim que eu conquistei mais tempo: fazendo a ia escrever codigo que eu teria que gastar tempo escrevendo. Passei no curso com A+ (sorry FGV, em minha defesa, ate o momento, nao tinha nenhuma restricao quanto ao uso de AI :D)
+No fim de 2022 a OpenAI soltou o ChatGPT, em cima do GPT-3.5: o primeiro LLM que virou mainstream de verdade. No começo de 2023, eu estava fazendo curso de verão na FGV EMAp, dois ao mesmo tempo:
 
-Nesse momento eu pensei: essa eh uma puta solucao, desocnsiderando os gastos que se tem em rodar um modelo desse, me parece que isso daqui vai mudar a forma como escrevemos codigo... se isso daqui evoluir num ponto de simplesmnete virar interepretador de intencoes tao bom ao ponto de virar camada de abstracao entre mim e o codigo... isso daqui vai mudar muito como usamos linguagens de programaca. Liguei para um grande amigo meu, Tiago Trindade, e tivemos uma longa conversa sobre a definicao de programador e como seria o futuro.... mas isso eh historia para outro post.
+1. **Introdução à Programação com Python.** Easy easy, eu tava lá só pelas horas de curso.
+2. **Análise Real.** Puta que pariu, que curso complicado. Eu tava morrendo, alguém me ajuda.
 
-## Interpretador de intencoes... mas como?
+Como eu tinha muito tempo sobrando (contém ironia), peguei uma chave de API e escrevi um script simples:
 
-Escrever codigo eh, na pratica, o ato de expor o seu desejo - intencao - de forma procedural, passo a passo, detalhada em linhas de codigo.
-
-Por exemplo, suponha a situacao em que vc precisa informar diariamente para o seu chefe / CTO oq vc fez de ontem da ultima semana em termos de codigo... Na pratica vc vai atras de do historico de coisas que vc fez, se deixou anotado, ou no histoico de commits e coisas assim, vai sumarizar isso de alguma forma, e entregar pronto; Esse eh o seu desejo. Mas como ele seria em forma de codigo?
-
-Talvez, fosse algo assim:
-
-<!--TODO: melhora essse codigo, nomeclatura, e adiciona umas anotacoes legais nele-->
-```python
-messenger = Messenger(...)
-gh = Github(...)
-seventh_day_before = datetime.now() - datetime.timedelta(days=7)
-
-summary = "\n\n".join(
-    "\n".join(repo.last_commits(author="your-user", limit=seventh_day_before))
-    for repo in gh.list_repos("your-organization")
-)
-
-messenger.send(f"That's what ive done:\n{summary}")
+```mermaid
+sequenceDiagram
+    autonumber
+    participant S as meu script
+    participant F as plataforma da FGV
+    participant O as OpenAI
+    S->>F: login com a minha conta
+    F-->>S: exercícios não resolvidos
+    loop cada exercício
+        S->>O: enunciado + exemplos de entrada e saída
+        O-->>S: código da solução
+        S->>F: submete o código
+    end
 ```
 
-Note que, no processo de escrever este codigo, VC foi o tradutor da sua intencao para codigo que, eventualmente sera interpretado / compilado e executado.
+E foi assim que eu ganhei tempo: fazendo a IA escrever o código que eu teria que gastar tempo escrevendo. Passei com A+.[^fgv]
 
-O LLM como assistente de codigo nada mais eh do que um interpretador de intencao: vc vai transmitir ela atraves de linguagem natural (nao linguagem de programacao) e ele vai se encarregar de executar essas instrucoes.
+Ali caiu a ficha: isso é uma puta solução. Tirando o custo de rodar um modelo desses, isso ia mudar o jeito que a gente escreve código. Se evoluísse até virar um **interpretador de intenções** bom o bastante pra ser uma camada de abstração entre mim e o código, ia mudar até o jeito que a gente usa linguagem de programação.
 
-O problema eh que, quando utilizamos isso como uma camada (um codom hahah) entre sua real intencao e o codigo, pode acontecer do LLM simplesmente nao conseguir escrever de tal forma como vc gostaria, ou como vc imaginou... nao pq a LLM eh burra, mas pq lhe faltou informacao... Quando vc, humano - espero -,  escreve o codigo diretamente, existe zero camadas de interpretacao da sua intencao, vc eh a intencao, vc eh a janela de contexto, vc sabe - em geral - oq quer fazer... onde quer chegar... e quando alguma coisa lhe falta, rapidamente sua mente atraves das conexxoes sinapticas no seu cebero fazem retrieval da informacao para fechar o GAP.
+Liguei pro meu grande amigo [Tiago Trindade](https://github.com/TiagoCavalcante), e a gente teve uma longa conversa sobre o que é ser programador e como seria o futuro... mas isso é história pra outro post.
 
-O LLM que apenas possui uma instrucao inicial sua - por sua vez, provavelmente, com um grande gap de informacoes, pq somos preguicosos, nao gostamos de escrever a especificidade nunca sera tao profunda quanto temos na nossa cabeca - nao tentar fechar esses gaps - por design, por arquitetura - sozinho, com suas proprias ferramentas... Entao na pratica, eh muito necessario que, se quer algo que consiga expor sua intencao em forma de codigo de forma curada... vc precisa entrar no loop para fechar esses possiveis GAPs de infromacao...
+## Interpretador de intenções... mas como?
 
-Como diria o Akita em seu prime: ["ChatGPT eh so um completador de texto vangloriado"](https://youtu.be/O68y0yRZL1Y).
+Escrever código é, na prática, expor uma intenção de forma procedural: passo a passo, detalhado em linhas de código.
 
-## Dev Tools: 1a extensao no vscode
+Exemplo: você precisa contar pro seu chefe (ou CTO) o que fez na última semana. Na mão, você vai no histórico de commits ou nas suas anotações, resume aquilo e manda. Essa é a sua intenção. Em código, ficaria mais ou menos assim:
 
+```python title="weekly.py"
+from datetime import datetime, timedelta
 
-Apesar disso, eu tentei, e a 1a versao disso foi uma extensao no vscode que hoje ja nao mais existe nem o rastro no github para code completing. Naquele inicio, com uma janela de contexto pequena, era mais facil tentar predizer o que eu estava tentando escrever do que escrever algo maior... 
+github = GitHub(token=...)
+slack = Slack(token=...)
 
-A extensao que escrevi para o vscode era simples, basicamente pegava meu codigo e enviava para a openai quando eu dava idle de 5 segundos, e retornava o possivel output para terminar aquilo dali. Exemplo:
+since = datetime.now() - timedelta(days=7)  # (1)!
 
-```python
-# fibonacci
+done = [
+    f"- {repo.name}: {commit.message}"
+    for repo in github.repos(org="minha-org")  # (2)!
+    for commit in repo.commits(author="felipeadeildo", since=since)  # (3)!
+]
 
-def fib(n: int) -> int:
-    ...
+slack.send("#daily", "O que eu fiz na última semana:\n" + "\n".join(done))  # (4)!
 ```
 
-Alguns segundos depois, me aparecia:
+1.  "Última semana" virou os últimos 7 dias corridos. Não é de segunda a sexta, não é desde a última reunião. **Você** decidiu.
+2.  Só os repositórios da organização. O side project de sábado ficou de fora. **Você** decidiu.
+3.  "O que eu fiz" virou commits. PR revisado, call de duas horas, bug investigado que não gerou commit: nada disso conta. **Você** decidiu.
+4.  "Contar pro chefe" virou mandar no canal `#daily`. Não é DM, não é e-mail. Adivinha quem decidiu.
 
-```python
-# fibonacci
+Clica nos marcadores do código: cada linha é uma decisão que só existia na sua cabeça. Escrevendo, **você** foi o tradutor da sua intenção pra código, que depois vai ser interpretado ou compilado e executado.
 
-def fib(n: int) -> int:
-    return n if n in (1, 0) else fib(n-1) + fib(n-2)
+Um LLM como assistente de código faz exatamente esse papel de tradutor, só que de fora: você passa a intenção em linguagem natural (não em linguagem de programação), e ele se vira pra transformar aquilo em código.
+
+```mermaid
+flowchart LR
+    I(["sua intenção"]) --> V["você escreve"] --> C1["código"]
+    I --> P["prompt"] --> L["LLM escreve"] --> C2["código"]
+    G["o gap: tudo que<br/>não coube no prompt"] -.->|falta| L
 ```
+/// caption
+Em cima, zero camadas de interpretação. Embaixo, uma camada, e um buraco.
+///
 
-Magico! Funcionava que era uma beleza, mas nao era o suficiente, com uma codebase separada por arquivos, fazia bem mais sentido expor outros arquivos tbm... mas a janela de contexto nao permitia... entao veio as engenharias de contexto e tooling para contexto sob demanda.
+O problema é essa camada no meio (uma camisinha entre você e o código, basicamente). Quando você escreve o código, não tem interpretação nenhuma: você **é** a intenção, você é a janela de contexto, você sabe onde quer chegar. E quando falta alguma coisa, suas sinapses fazem o retrieval e fecham o gap na hora.
 
-### exposing and calling tools;
+O LLM só tem o prompt. E o prompt nunca é tão profundo quanto o que está na sua cabeça, porque a gente é preguiçoso e odeia escrever especificação. Aí ele escreve diferente do que você imaginou. Não porque é burro: porque faltou informação. E, por design, ele não fecha esse gap sozinho, porque o que falta só existe na sua cabeça.
 
-O que o LLM precisava era simples: mais contexto para ser mais acurado em codebases maiores.
+Então, se você quer a sua intenção virando código do jeito que imaginou, ==você precisa entrar no loop== pra fechar esses gaps.
 
-E a solucao pra isso, nessa extensao, era muito simples: especificar uma sintaxe para chamada de ferramentas.
+!!! tip "Guarda essa frase"
 
-```text
-Voce eh um agente de codigo especializado em terminar de escrever
-codigo escrito por outro dev.
+    Ela é a tese deste post. Tudo que eu construí lá no final existe pra deixar **barato** entrar no loop.
 
-Quando esitver na duvida do contrato de alguma ferramenta,
-explore utilizando as seguinte sintaxe:
+Como disse o Akita, no auge: ["o ChatGPT é só um completador de texto glorificado"](https://youtu.be/O68y0yRZL1Y). Segura essa também, que ela vai ser útil daqui a pouco.
 
->>> listar pwd?
->>> ler pwd
+## Uma breve (e enviesada) história das ferramentas
+
+### 1. Autocomplete no VS Code
+
+Mesmo assim eu tentei. A primeira versão foi uma extensão do VS Code pra completar código, que hoje não tem nem rastro no GitHub. Naquele começo, com janela de contexto minúscula, era muito mais fácil prever o que eu ia escrever do que escrever algo grande.
+
+A ideia era simples: fiquei 5 segundos parado, ela mandava o arquivo pra OpenAI e me mostrava o resto.
+
+=== "O que eu escrevi"
+
+    ```python
+    # fibonacci
+
+    def fib(n: int) -> int:
+        ...
+    ```
+
+=== "5 segundos depois"
+
+    ```python hl_lines="4"
+    # fibonacci
+
+    def fib(n: int) -> int:
+        return n if n in (0, 1) else fib(n - 1) + fib(n - 2)
+    ```
+
+Mágico! Funcionava que era uma beleza. Mas não bastava: numa codebase dividida em arquivos, fazia muito mais sentido mostrar os outros arquivos também, e a janela de contexto não deixava. Aí vieram a engenharia de contexto e as ferramentas de contexto sob demanda.
+
+### 2. "Dar ferramentas" ao LLM
+
+O LLM precisava de uma coisa só: mais contexto, pra acertar mais em codebase grande. E a solução, nessa extensão, foi bem simples: inventar uma sintaxe pra chamar ferramenta, e explicar ela no system prompt.
+
+```text title="system prompt"
+Você é um agente de código especializado em terminar
+código escrito por outro dev.
+
+Na dúvida sobre o contrato de alguma coisa, explore com esta sintaxe:
+
+>>> listar <pasta>
+>>> ler <arquivo>
 
 Exemplos:
-> retorna lista de arquivos no projeto atual:
+
 >>> listar
 pyproject.toml
 src/
 README.md
 
-> retorna lista de arquivos dentro da pasta `src/` do projeto atual
->>> listar src/
-src/__init__.py
-src/core.py
-src/api.py
-
-> retorna o texto do arquivo especificado no projeto atual
 >>> ler src/core.py
-# src/core.py:
 def fib(n: int) -> int:
-    return n if n in (1, 0) else fib(n-1) + fib(n-2)
+    return n if n in (0, 1) else fib(n - 1) + fib(n - 2)
 
----
-
-Automaticamente, os lugares em que voce referenciar seram trocados pelo retorno da sintaxe.
-Pode parar quando escrever alguma delas;
+Pare de escrever logo depois de uma chamada. O resultado aparece no lugar dela.
 ```
 
-E o codigo da extensao era algo parecido com isso daqui:
+E o loop da extensão era mais ou menos isso aqui:
 
-```python
-system_prompt = ...
-project_path = Path(...)
-current_file = project_path / "src" / "example.py"
+```python title="extension.py"
+import re
+from pathlib import Path
 
-context = f"""\
-Complete com base em:
-Projeto: {project_path}
-Arquivo: {current_file}
-Conteudo:
-{current_file.read()}
-"""
-
-history = [{"system": system_prompt, {"user": context}]
-tools = {
-    "listar": lambda x: os.listdir(x or "."),
-    "ler": lambda x: Path(x).read()
+TOOLS = {
+    "listar": lambda arg: "\n".join(p.name for p in Path(arg or ".").iterdir()),
+    "ler": lambda arg: Path(arg).read_text(),
 }
+CALL = re.compile(r"^>>> (listar|ler) ?(.*)$", re.MULTILINE)  # (1)!
+
+history = [
+    {"role": "system", "content": SYSTEM_PROMPT},
+    {"role": "user", "content": f"Complete o arquivo {path}:\n{path.read_text()}"},
+]
 
 while True:
-    model = OpenAI(..., history=history)
-    response = ""
-    for chunk in model.stream_complete():
-        response += chunk
-        # print(chunk, end="")
-
-    for index, lenght, (command, argument) in extract_syntax_calls(response):
-        result = tools[command](argument)
-        response = response[:index+lenght] + f"\n{result}" + repsonse[index+lenght:]
-    else: # nao teve chamada de ferramenta
+    response = complete(history)  # (2)!
+    calls = CALL.findall(response)
+    if not calls:  # (3)!
         break
-
-    history.append({"assistant": response})
+    results = "\n".join(TOOLS[name](arg) for name, arg in calls)  # (4)!
+    history += [
+        {"role": "assistant", "content": response},
+        {"role": "user", "content": results},
+    ]
 
 print(response)
 ```
 
-Era algo bem mais elegante que isso, mas o pseudo codigo era algo assim.
+1.  A "API de ferramentas" inteira. Uma regex.
+2.  O completador de texto glorificado. Ele não sabe que existe ferramenta nenhuma: só escreve texto que, por acaso, casa com a regex.
+3.  Nenhuma chamada na resposta? Acabou, essa é a resposta final.
+4.  Quem executa é o **nosso** código, não o modelo. O resultado volta pro histórico como mais um texto qualquer.
 
-Entao "dar ferramentas a um LLM" nada mais eh que fazer regex em cima de output estruturado. Nao existe nada de "poder", eh simplesmente um completador de texto que aplicamos varias e varias vezes, e passamos regex em cima dos chunks a fim de mapear o resultado a uma tool implementada na mao. Nada alem disso;
+O de verdade era bem mais elegante que isso, mas a essência é essa:
 
-## CLI Coding Agents: uma nova era
+```mermaid
+flowchart LR
+    H["histórico"] --> M["LLM completa o texto"]
+    M --> R{"a regex achou<br/>uma chamada?"}
+    R -->|sim| T["o SEU código executa"]
+    T -->|o resultado vira texto| H
+    R -->|não| F(["resposta final"])
+```
 
+!!! info "Então é isso"
 
-Bom, isso dai ja era coisa do passado, coisas bem mais legais foram aparecendo, e o proprio vscode comecou a ter releases voltadas para facilitar a implementacao / integracao dessas novas ferramentas de IA.
+    Dar ferramentas a um LLM é fazer **regex em cima de output estruturado**. Não existe "poder" nenhum. É um completador de texto que a gente roda várias vezes, com uma regex em cima de cada resposta pra mapear o resultado numa ferramenta implementada na mão. Nada além disso.[^json]
 
-Eventualmente, fomos introduzidos ao "realmente precisamos que isso esteja rodando dentro de uma IDE? Eu nao preciso de uma IDE para listar e ler arquivos, muito menos EDITAR os mesmos... posso so expor uma tool "edit" com alguns argumentos especificos e boa.
+### 3. A era das CLIs
 
-E com isso, chegou a era dos CLI's!!!
+Isso virou passado rapidinho. Foi aparecendo coisa muito mais legal, e o próprio VS Code começou a lançar coisas pra facilitar a integração com essas ferramentas de IA.
 
-Quem fez isso muito bem - e continua ate o momento em que faco escrevo esse post - eh a anthropic, revolucionou, quebrou varios paradigmas do que se eh considerado ambiente de programacao... claro que para isso, requer uma evolucao de modelos e tudo mais, e o finetuning numa camada de treinamento final que treina os llms apenas para chamada de ferramentas, chamada de tools, vulgo: escrever bom's outputs de JSONs especificados.
+Até que alguém perguntou: precisa mesmo rodar dentro de uma IDE? Eu não preciso de IDE pra listar e ler arquivo, muito menos pra **editar**. Expõe uma tool `edit` com uns argumentos e boa.
 
-Em ordem cronologica, la pra 2023 quem tinha comecado isso foi o criador do [Aider](...) nascido junto com o GPT-4, introduzindo tbm uma forma de ser agnostica a modelos.
+E assim chegou a era das CLIs!!!
 
-Eventualmente, em abril de 2025, veio a OpenAI e trouxe o Codex CLI que sinceramente, era uma bosta... o modelo nao sabia muito bem utilizar as tools... pq nao? pq na epoca, so tinha UMA tool: bash. Entao na pratica `list` = `bash("ls")`, `read` = `bash("cat file_path.ext)` e `edit` = `bash("sed ...")`. So que o odelo nao tinha refinamento pra usar unix shell ainda.
+| Quando | Quem | O que trouxe |
+| --- | --- | --- |
+| mai. 2023 | [Aider](https://aider.chat) | Quem começou. Nasceu junto com o GPT-4, e logo virou agnóstico de modelo |
+| fev. 2025 | [Claude Code](https://www.anthropic.com/claude-code) | O mais maduro, mas focado no ecossistema da Anthropic. Ferramentas bem abstraídas, subagents em paralelo, e um monte de paradigma quebrado sobre o que é ambiente de programação |
+| abr. 2025 | [Codex CLI](https://github.com/openai/codex) | Sinceramente, uma bosta no lançamento (hoje melhorou muito). Basicamente uma tool só, `shell`, num modelo que ainda não sabia usar shell Unix |
 
-E finalmente, veio a Anthropic trazendo o claude code, o mais maduro mas focado no ecosistema do claude... rtranzeod algumas coisa slegais como fluxos de subagents em paralelo e coisas do tipo. Alem de trazer uma abstracao para as ferramentas.
+No Codex daquela época, `list` era `shell("ls")`, `read` era `shell("cat arquivo.ext")` e `edit` era `shell("sed ...")`. O modelo não tinha refinamento pra isso, e dava pra sentir.
 
-Lindo!
+Quem fez isso muito bem, e continua fazendo enquanto escrevo, foi a Anthropic. Claro que pra isso o modelo também teve que evoluir: uma camada de pós-treinamento só pra chamar ferramenta, vulgo escrever bons JSONs no formato especificado.
 
+### 4. Onde a galera perdeu a linha
 
-### Onde que essa galera perdeu a linha?
+Repara: na prática, um LLM não precisa de mais de duas ferramentas pra se virar.
 
-Note que, na pratica, um LLM nao precisa de mais que 2 ferramentas pra se virar:
+```python
+def read(path: str) -> str: ...  # (1)!
+def edit(path: str, old: str, new: str) -> None: ...  # (2)!
+```
 
-- read
-- edit
+1.  Num arquivo, devolve o conteúdo. Numa pasta, devolve o que tem dentro.
+2.  Troca `old` por `new` no arquivo. Só.
 
-> joke: passa ano, entra ano e nao conseguimos fugir do input/output, cara.
+!!! quote "Fun fact"
 
-read(file_path) -> file content
-read(folder_path) -> list of folders and files inside the path
-edot(file_path, filters, new_content) -> edit files
+    Passa ano, entra ano, e a gente não consegue fugir do input/output.
 
-apenas.
+O resto é conforto:
 
-O resto eh para facilitar a vida, por exemplo:
+- **search**: nada mais que um `grep`. Se quiser luxo, um grep em cima da AST.
+- **bash**: esse é maravilhoso, porque com um modelo bom o bastante (não era o caso da OpenAI no começo de 2025), só ele já abstrai o `read` e o `edit`.
 
-- search (eh nada mais eh que um grep, mas pode botar grep com AST)
-- bash (esse daqui eh maravilhoso, pq - se o modelo for bom o suficiente, nao era o caso da opneai no inicio de 2025 - so com bash da pra abstrair read e edit).
+A galera se perdeu quando o hype começou. Foi uma loucura: muita desinformação sobre as capacidades, muita gente falando merda na internet, e todo mundo achando que estava tudo perdido, porque se o LLM "escreve código melhor que eu", com as ferramentas certas ele me substitui. Que bagunça isso virou.
 
-O pessoal se perdeu no momento em que o hype em cima disso comecou... foi uma loucura, muita misinformation das capacidades... muita gente burra, idiota falando merda pela internet... e o pessoal achando que tudo estaria perdido pq se o LLM eh "melhor do que eu escrevendo codigo" entao ele vai me substituir se tiver as ferrementas certas... Que bagunca isso virou.
+Do nada, 1001 ferramentas, tools, workflows, skills e não sei o quê lá. Mano, tudo isso é regex em cima de output estruturado, pra trazer contexto sob demanda e executar ferramenta. Mas o mundo precisava de hype, então deram 1001 nomes pra input/output condicional a um match de regex. Louco, né?
 
-Do nada, 10001 ferramentas, tools, workflows, skiils, e num sei oq la... mano, tudo isso, nao passava de regex em cima de output estruturado para trazer mais contexto sob demanda e executar ferramentas. Apenas isso... mas o mundo, a internet, as pessoas, precisavam de hype... entao deram 1000001 nomes para input/output condicional `a um match de regex em cima de output estruturado. Simples assim... louco nao?
+| O nome bonito | O que é de verdade |
+| --- | --- |
+| Tool calling | O modelo escreve um JSON, o harness faz o match e executa a função |
+| Skill | Um prompt num `.md`, hospedado num [skills.sh](https://skills.sh) da vida. Um ++ctrl+c++ ++ctrl+v++ com marketing |
+| MCP | Um servidor que lista as próprias tools e responde quando chamam |
+| Subagent | O mesmo loop rodando de novo, com o histórico limpo |
 
-## Onde Claude Code tem me perdido
+## Onde o Claude Code me perdeu
 
-Claude Code por um bom tempo tem sido para mim o "estado da arte" de CLI Coding Harness, introduzindo varios conceitos legais e, para alem de tudo, que realmente sao uteis e dao um bom controle ao usuario.
+Por um bom tempo, o Claude Code foi pra mim o estado da arte de harness de CLI. Introduziu vários conceitos legais, úteis de verdade, que dão um bom controle pra quem usa.
 
-Porem, por serem uma empresa privada, com objetivos de controlar o mercado, tornaram o harness quase que impossivel de ser executado sem ser em cima de um modelo proprietario... Otimas funcionalidades... mas que so funcionam bem se o seu llm provider for anthropic ou gateways de anthropic.
+Só que ele é de uma empresa privada, com o objetivo de controlar o mercado, e o harness ficou quase impossível de usar fora de um modelo da casa. Funcionalidades ótimas... que só funcionam bem se o seu provider for a Anthropic, ou um gateway dela. E por vários motivos:
 
-Isso se da por varios motivos... desde system prompts do tamanho de uma biblia que tornam a inicializacao de qualquer sessao num modelo local numa maquina regular, simplesmente muito demorado... ate assinatura de funcoes dificeis de serem representadas a nao ser que seu LLM tenha tido uma camada de pos treinamento especifico para aquele use-case; 
+- :lucide-book-open: **System prompt do tamanho de uma Bíblia.** Iniciar uma sessão com modelo local, numa máquina normal, fica simplesmente lento demais.
+- :lucide-puzzle: **Assinaturas de tool difíceis de representar**, a não ser que o seu modelo tenha passado por um pós-treinamento específico pra aquele caso de uso.
+- :lucide-lock: **Auto mode com critério proprietário.** Quem decide o que é aceito sozinho é a Anthropic, e nem sempre ela faz um bom trabalho nisso.
 
-Eventualmente, foi introduzido o auto-mode que, sinceramente, nao eh algo tao util assim, pq os criterios de aceitacao automatica eh proprietario da anthropic... e nao necessariamente eles fazem um bom trabalho com isso.
+Resumindo: a maior dificuldade é rodar coisa diferente dentro da carcaça do Claude Code. Só isso.
 
-Dito isso, a maior dificuldade eh rodar coisas diferentes com a carcaca do claude code. Apenas isso.
+!!! note "Sim, eu sei que dá pra trocar o endpoint"
 
-> Sim, eu sei que tem como eu definir profiles com endpoints diferentes, inclusive, eu desenvolvi meu [gestor de contas claude](https://github.com/felipeadeildo/claude-code-profiles) fazendo uso dessa funcionalidade.
+    Dá pra definir profiles com endpoints diferentes. Eu inclusive escrevi um [gestor de contas do Claude Code](https://github.com/felipeadeildo/claude-code-profiles) que usa exatamente isso. Só que isso não resolve o resto da lista.
 
+## Procurando casa nova
 
-## Falling in love: pi.dev
+Na busca por alternativa, passei por `opencode`, `opencode2`, `aider`, `hermes`, `fx.sh` e por aí vai. Cheguei até a revisitar o `codex` (que melhorou muito, btw).
 
+Só que todos eles, por algum fucking motivo, assumiam que eu quero fazer as coisas **one-shot**, sem human-in-the-loop: sem eu dar feedback, responder pergunta, permitir ou negar alguma coisa. Nem todos tinham tudo, mas a maioria compartilhava estas deficiências:
 
-Na minha busca por alternativas, passei por `opencode`, `opencode2`, `aider`, `hermes`, `fx.sh`, etc etc. Inclusive cheguei ate mesmo a revisitar o `codex` (grandes improvements, btw).
+1. :lucide-shield-off: **Editar tudo by default.** Começavam com permissão pra editar qualquer coisa, o que eu acho ousado demais.
+2. :lucide-eye-off: **Visibilidade truncada.** Qual arquivo, o quê, por quê, o thinking, a decisão: tudo meio escondido.
+3. :lucide-message-square-x: **Permissão binária.** O diálogo era `yes` ou `no` e só. Se eu negasse, o agente recebia `the tool call was denied by the user` e mais nada: sem motivo, sem follow-up. Lembra do gap? Pois é: eu negava e o gap continuava lá, intacto.
+4. :lucide-bug: **Não eram o Claude Code.** Uma funcionalidade bem feita de um lado, outra bugada do outro.
+5. :lucide-gauge: **Performance.**
 
-Infelizmente, todos eles - por algum fucking motivo - tinha uma pre disposicao a assumir que eu quero fazer coisas "one-shot" sem "human-in-the-loop" dando feedbacks, respondendo questoes ou permitindo/negando coisas...
+Guarda essa lista. Ela volta no final.
 
-Em geral, coisas que eu observei e que me deixavam puto (nao sao todos, mas compartilham da grande maioria dessas "deficiencias")
+### Amor à primeira vista: pi.dev
 
-1. Iniciavam com a permissao de "editar tudo" by default, o que eu acho muito ousado.
-2. Visibilidade do que estava acontecendo meio truncado: qual arquivo, oq por que, thinking, decisao.
-3. Dialogo de permissao se restringia a "yes"/"no", sem feedback, sem improvement, sem nada do tipo... entao se eu negasse uma chamada de tool, o agente simplesmente receberia um output: "the call tool was denied by the user", apenas isso, sem follow up, sem nada.
-4. Nao era o claude code hahaha, funcionalidades de um lado bem implementadas, de outro meio bugadas.
-5. Performance.
+Até que um amigo, o [Bruno Assis](https://www.linkedin.com/in/brunoassis88/), me apresentou o [pi.dev](https://pi.dev). Foi amor à primeira vista.
 
+Minimalista, extensível, direto ao ponto. Uma página em branco esperando pra ser pintada! Bem mais perto de outras TUIs, e com opiniões fortes sobre o que é uma tool.
 
-Eventualmente, um amigo - [Bruno Assis](https://www.linkedin.com/in/brunoassis88/) - me apresentou o [pi.dev](https://pi.dev). Foi amor a primeira vista...
+### Sem tempo pra fazer o meu (ainda): Oh My Pi
 
-Minimalista, extensivel, direto ao ponto, uma pagina em branco prestes a ser pintada!
+Fazer um bom harness leva tempo, então fui ver o que a comunidade já tinha feito em cima disso. Conheci o [Oh My Pi](https://omp.sh), que não podia ter nome melhor pra uma versão opinionated hahaha. Simplesmente perfeito: TUI ótima, bonita, configurável, cheia de coisa útil de verdade.
 
-Era algo mais proximo de outras tui's e com fortes opinioes sobre oq eh uma tool!
+Mas ainda falhava em algumas coisas. O feedback ao aceitar ou negar uma tool, por exemplo. E não tinha política tipo "accept edits" ou "manual mode": era 8 ou 80, sem meio-termo configurável.
 
+Usei por um bom tempo, é um trabalho excelente. Mas tem uma pegadinha:
 
-### I dont have time (yet)
+!!! info "O omp não é o pi"
 
-Apesar disso, fazer um bom harness requer tempo, vamos ver o que a comunidade fez em cima disso... e fui introduzido ao [Oh My Pi](https://omp.sh) - nao tinha nome melhor para uma versao opinionated hahaha - simplesmente perfeito, uma otima TUI, bem bonito, configuravel, com um monte de coisa realmente util... mas ainda falhava em algumas coisas, como por exemplo, a forma de dar feedback ao aceitar/negar execucao de alguma tool e nao haver policitas de "accept edits" / "manual mode", era 8 ou 80.. nao havia meio termo configuravel.
+    É um fork do pi, atualizado com o upstream. Tipo o que o Arch Linux é pro kernel Linux. Isso não é problema nenhum, só é bom ter em mente.
 
-Usei por um bom tempo, eh realmente um otimo trabalho... mas tem uma pegadinha: Nao eh o pi! Eh um fork do pi atualizado com a main stream... eh tipo o que o archlinux eh para o kernel linux. Isso nao eh um problema, so pra ter em mente isso.
+### pi puro + extensões, sem fork
 
-### bare pi + extensions (not a fork)
+Depois de uma overdose de funcionalidade no omp, e já sabendo o que era possível fazer, voltei pro pi e fui olhar a lista de extensões. Algumas merecem meus devidos respeitos:
 
-Eventualmente, apos um overhead de funcionalidades do omp, descobrindo oq era possivel fazer, voltei para o pi e comecei a dar uma olhada na lista de extensoes.
+<div class="grid cards" markdown>
 
-Algumas a quem eu devo prestar meus devidos respeito sao:
+-   :lucide-layout-panel-top:{ .lg .middle } **[pi-open-tui](https://github.com/OldSuns/pi-open-tui)**
 
-1. [pi-open-tui](https://github.com/OldSuns/pi-open-tui): uma interface muito limpa on top of pi, e bonita, configuravel tbm.
-2. [rpic-ask-user-question](https://github.com/juicesharp/rpiv-mono/tree/main/packages/rpiv-ask-user-question): uma interface bem "claude code"-like para permitir que o LLM te faca perguntas para fechar os _gaps de informacao_ e tomada de decisao.
-3. [pi-claude-max](https://github.com/bradennss/pi-claude-max): basicamente interceptaca a chamada de API stream da anthropic para injetar headers que se passam pelo "claude code cli" com o objetivo da API consumir minha subscription usage ao inves de usar extra usage. - Novamente, anthropic, pq? -
-4.  [pi-multiprovider](https://github.com/monotykamary/pi-multiprovider): objetivo parecido com o meu [claude code profiles](https://github.com/felipeadeildo/claude-code-profiles) que permite configurar mais de uma conta para um determinado provider. Tipo, Anthropic pessoal + Anthropic Ranqia de forma simples.
-5. [pi-web-access](https://github.com/nicobailon/pi-web-access): dar ao LLM ferramenta de pesquisa / leitura da internet + summary;
-6. [pi-memory](https://github.com/jayzeng/pi-memory): "gives it a memory: durable facts and decisions, a running daily log, and a scratchpad of things to come back to — all as plain markdown files you can read, edit, and commit. With optional qmd it also gets keyword, semantic, and hybrid search across everything it has ever remembered." (direto do README);
+    ---
 
-Entre outras bem legais!
+    Uma interface limpa e bonita em cima do pi, e configurável.
 
-Foi um mundo novo!
+-   :lucide-message-circle-question:{ .lg .middle } **[rpiv-ask-user-question](https://github.com/juicesharp/rpiv-mono/tree/main/packages/rpiv-ask-user-question)**
 
-### a extensao que faltava: pi-ask-permission [like claude code does]
+    ---
 
-Eventualmente, vi que faltava uma extensao ao meu gosto... a experiencia que eu queria aparentemente so ia existir se eu a criasse. Entao nasceu a [pi-ask-permission _(deprecated, ok?)_](https://pi.dev/packages/pi-ask-permission). Basicamente, antes de fazer chamada de tools nao read-only, me pedir permissao, e me dar uma interface parecida com isso daqui:
+    Um diálogo bem Claude Code pro LLM te fazer perguntas: fechar o _gap de informação_ e decidir junto com você.
 
-![img](https://raw.githubusercontent.com/felipeadeildo/pi-harness/main/packages/ask-permission/assets/preview.png)
+-   :lucide-key-round:{ .lg .middle } **[pi-claude-max](https://github.com/bradennss/pi-claude-max)**
 
-Eventualmente, tbm cheguei a implementar um judge logo apos o lancamento do [Jev @ Typesafe](https://typesafe.ai/blog/introducing-system-one-models-and-jev), para dar uma avaliada no na tool call (asinatura + argumentos), ficaria algo assim:
+    ---
 
-![img](https://raw.githubusercontent.com/felipeadeildo/pi-harness/main/packages/look/assets/call.png)
+    Intercepta o stream da API da Anthropic e injeta os headers do Claude Code CLI, pra cobrar da assinatura em vez do extra usage. (De novo, Anthropic: por quê?)
 
+-   :lucide-users:{ .lg .middle } **[pi-multiprovider](https://github.com/monotykamary/pi-multiprovider)**
 
-### ok, vamos unificar... e adeildo disse: haja harness opinionated!
+    ---
 
-Infelizmente, nem tudo sao flores, eventualmente isso foi virando um frankenstein de extensoes de terceiros... nao eh algo ruim, mas algumas coisas pequenas incomodavam... abri PR's para resolver algumas delas, inclusive... mas sao a MINHA opiniao contra a dos mantenedores dessas extensoes... E o tempo de resposta nao era tao rapido quando eu gostaria para ter a ultima versao das coisas na minha maquina.
+    Mais de uma conta pro mesmo provider, tipo Anthropic pessoal + Anthropic da Ranqia. A mesma ideia do meu claude-code-profiles.
 
-Resolvi entao reimplementar todas num monorepo.
+-   :lucide-globe:{ .lg .middle } **[pi-web-access](https://github.com/nicobailon/pi-web-access)**
 
-Compartihando estado, padrao de UI, algo bem parecido com o que o OMP se propoe a fazer, porem, sem virar um fork.
+    ---
 
-Entao nasceu o [@adeildo/pi-harness](https://github.com/felipeadeildo/pi-harness) onde eu exponho tudo que eu gostaria e uso no meu dia a dia, sao minhas opinioes sobre como essas ferramentas deveriam ser e parecer... a experiencia que eu como desenvolvedor gostaria de ter ao montar um LLM qualquer!
+    Busca e leitura da internet pro LLM, com resumo.
 
-![img](https://raw.githubusercontent.com/felipeadeildo/pi-harness/main/packages/harness/assets/conversation.png)
+-   :lucide-brain:{ .lg .middle } **[pi-memory](https://github.com/jayzeng/pi-memory)**
 
-Alem de: tem que ser relativamente bonito, elegante, confortavel e intuitivo, nada de 10001 comandos para fazer coisas distintas, uma tela d configuracao unificada, poucos passos e vc esta PRONTO para comecar a usar, sem problema nenhum.
+    ---
 
-### Implementado so far e ideias para o futuro!
+    Memória em markdown puro: fatos e decisões duráveis, um log diário e um scratchpad. Com o qmd, ganha busca por palavra-chave, semântica e híbrida.
 
-...
+</div>
 
-## Consideracoes
+Entre outras! Foi um mundo novo.
 
-brief: aqui falamos sobre nao se achar o dono da cocada preta... eu to fazendo isso pq sao minhas opinioes, se nao gosta ou discorda, faz um fork ou faz melhor, eu nao to nem ai; abre pr la kkkkk; a ideia disso daqui, eh trazer essas visoes sobre como eu enxergo essas novidades de ia, e como varias delas sao bem slop... por exemplo "skills", mano, isso eh um prompt em .md compartilhado por algum host tipo skills.sh, eh a penas isso, eh uma forma legal de vc dar ctrl+c & ctrl+v, grande coisa kkkk; a ideia aqui eh dizer que eu nao sou portador de todo conhecimento do mundo, e que eu ainda estou um pouco longe do estado da arte dos "workflows agenticos galaticos do improvement loop dos deuses", tem muita coisa que eu ainda nao sei bem como funciona... mas ate o momento, tem me servido muito bem oq tenho utilizado so far... existem coisas que nao podem quebrar, a responsabilidade de fazer algo de qualdiade, nao eh da ia: EH SUA, ou seja, se vc nao sabe - numa camada boa suficiente - o que caralhos esta acontecendo na sua aplicacao, no que vc ta denseolvendo... na arquitetura... cara, existe uma grande chance de fazer fazer algo que vai dar merda... nao eh por incapacidade da IA< eh por incapacidade sua! eh skill issue;
+### A extensão que faltava: pi-ask-permission
 
-e fazer um convite tbm a quem quiser colaborar com ideias, fazendo algo realmente bom, e com carinho, pensando na experiencia de cada feature, nao eh estar por estar... eh realmente impleemntando cosia que NOS MESMOS utilizariamos no nosso dia a dia... saca? bem fechado... as coisas tem inicio meio e fim.
+Ainda faltava uma do meu gosto, e pelo jeito a experiência que eu queria só ia existir se eu mesmo fizesse. Nasceu a [pi-ask-permission](https://pi.dev/packages/pi-ask-permission) (_deprecated, ok?_): antes de qualquer tool que não seja só leitura, ela me pede permissão, numa interface assim:
 
-eh isso, pra cima! bora biu!
+![O diálogo de permissão para npm install: o motivo da pergunta, as três respostas, e uma nota no no dizendo use pnpm instead](https://raw.githubusercontent.com/felipeadeildo/pi-harness/main/packages/ask-permission/assets/preview.png){ loading=lazy }
+/// caption
+Um `no` com uma nota que o modelo lê: _use pnpm instead_.
+///
+
+Repara no `no`: ele agora carrega um **motivo**. O agente não recebe só "negado", recebe o que fazer no lugar. É o item 3 da lista resolvido, e é literalmente fechar o gap.
+
+Depois do lançamento do [Jev, da Typesafe](https://typesafe.ai/blog/introducing-system-one-models-and-jev), um modelo classificador, eu dei um **juiz** a ela. Um modelo pequeno lê a chamada (a tool e os argumentos) e decide se ela roda sozinha ou se vem pra mim:
+
+![Três chamadas, cada uma na sua caixa: um bash aprovado pelo juiz com 97% de certeza, um read liberado por always yes, e um bash rodando que o juiz mandou pra uma pessoa decidir](https://raw.githubusercontent.com/felipeadeildo/pi-harness/main/packages/look/assets/call.png){ loading=lazy }
+/// caption
+Uma chamada que o juiz aprovou, uma que um _always yes_ liberou, e uma que veio pra mim.
+///
+
+## E Adeildo disse: haja harness opinionated!
+
+Nem tudo são flores. Aos poucos, aquilo virou um Frankenstein de extensões de terceiros. Não é ruim, mas umas coisinhas incomodavam. Cheguei a abrir PR pra resolver algumas, mas é a **minha** opinião contra a dos mantenedores, e o tempo de resposta não era tão rápido quanto eu queria pra ter a última versão das coisas na minha máquina.
+
+Então resolvi reimplementar tudo num monorepo, com estado compartilhado e um padrão de UI. Algo bem parecido com o que o omp se propõe a fazer, só que **sem virar fork**.
+
+Assim nasceu o [@adeildo/pi-harness](https://github.com/felipeadeildo/pi-harness): tudo que eu uso no dia a dia, do jeito que eu acho que essas ferramentas deveriam funcionar e parecer. A experiência que eu, como dev, queria ter montando um LLM qualquer.
+
+```sh
+pi install npm:@adeildo/pi-harness
+```
+
+![Uma sessão com o harness: o card de início, o pedido de commit e push, o bash aprovado pelo juiz com os testes passando, o editor emoldurado e o rodapé com custo e janelas do plano](https://raw.githubusercontent.com/felipeadeildo/pi-harness/main/packages/harness/assets/conversation.png){ loading=lazy }
+/// caption
+Uma sessão inteira: o card de início, o pedido, o juiz liberando o commit, e o rodapé dizendo quanto custou e quanto sobra do plano.
+///
+
+E tem umas regras das quais eu não abro mão:
+
+- [x] Bonito, elegante, confortável e intuitivo.
+- [x] Nada de 1001 comandos pra fazer coisas distintas: **uma** tela de configuração, no ++alt+s++.
+- [x] Poucos passos e você tá PRONTO pra usar.
+- [x] Sem fork. O `pi remove` devolve o pi do jeito que estava.
+
+### Como as peças se encaixam
+
+São quatro peças, e todas são features de uma mesma biblioteca, o kit. Uma peça nunca importa a outra: elas conversam por **contratos**, eventos em JSON puro trafegando no `pi.events`.
+
+```mermaid
+flowchart TB
+    subgraph H["@adeildo/pi-harness"]
+        direction TB
+        P["permission<br/>pergunta antes de rodar"]
+        Q["questions<br/>pergunta em vez de chutar"]
+        V["providers<br/>contas e plano"]
+        L["look<br/>mostra o que está acontecendo"]
+        P -->|desenha o diálogo com| Q
+        P -.->|quem decidiu e por quê| L
+        V -.->|conta e cota| L
+    end
+    H --> K["@adeildo/pi-kit<br/>features, settings, Alt+S, contratos"]
+    K --> PI["pi, intocado"]
+```
+/// caption
+As setas pontilhadas são contratos: se uma peça não está instalada, a outra só não recebe o evento.
+///
+
+Quer uma peça só? Cada uma também é um pacote próprio: `pi install npm:@adeildo/pi-look` traz a tela e mais nada. E o `pi config` desliga qualquer uma delas.
+
+### :lucide-shield-check: Permission: pergunta antes de rodar
+
+O pi, de fábrica, roda qualquer comando sem perguntar. Essa peça faz ele perguntar, e responde as perguntas fáceis por você. Toda chamada passa por aqui:
+
+```mermaid
+flowchart TD
+    call["o modelo quer rodar algo"] --> rule{"alguma regra<br/>já responde?"}
+    rule -->|"leitura, always yes,<br/>ou o modo"| run["roda"]
+    rule -->|não| judge["o juiz lê a chamada"]
+    judge -->|tem certeza que tá ok| run
+    judge -->|na dúvida| ask["vem pra você,<br/>com o motivo"]
+    ask -->|"yes ou always yes"| run
+    ask -->|"no + nota"| block["bloqueia, e a sua<br/>nota chega no modelo"]
+```
+
+Ela começa no modo mais conservador (adeus, item 1 da lista), e ++alt+m++ troca de modo:
+
+| Modo | Roda sem perguntar |
+| --- | --- |
+| `manual` | Leituras e o que você marcou como _always yes_. É o padrão |
+| `edits` | O mesmo, mais edição e escrita de arquivo |
+| `judge` | O mesmo que `edits`, e o juiz decide o resto |
+| `full` | Tudo. Boa sorte |
+
+Uma regra vale acima do modo: chamada fora do workspace **sempre** pergunta, até no `full`. O ++alt+w++ libera isso pela sessão, com um `anywhere` em vermelho na barra de status pra você não esquecer.
+
+=== "Always yes"
+
+    ![Depois de always yes, o diálogo pergunta o que lembrar: só essa chamada exata, ou qualquer chamada do pnpm](https://raw.githubusercontent.com/felipeadeildo/pi-harness/main/packages/ask-permission/assets/remember.png){ loading=lazy }
+
+    O _always yes_ pergunta **o quê** lembrar, e depois **por quanto tempo**: a sessão, o projeto, ou todo lugar. A primeira opção é sempre a mais estreita, e é a que você quer: `pnpm` aprovaria `pnpm publish` junto.
+
+=== "A pasta vizinha"
+
+    ![Uma leitura fora do workspace, com uma resposta que também libera leituras naquela pasta](https://raw.githubusercontent.com/felipeadeildo/pi-harness/main/packages/ask-permission/assets/folder.png){ loading=lazy }
+
+    Num monorepo, uma sessão em `apps/api` que lê `apps/web` sai do workspace. O diálogo avisa, e oferece abrir aquela pasta só pra **leitura**. Escrita lá fora continua perguntando.
+
+??? info "Como o juiz decide"
+
+    No modo `judge`, um modelo responde toda chamada que não é leitura nem edição, então você só vê as que ele duvidar. Ele roda nos classificadores do próprio pi (`ctx.modelRegistry.classify()`), então não tem prompt meu nem provider meu pra manter.
+
+    Uma chamada roda quando o juiz aprova com pelo menos a confiança do rigor escolhido, e o risco fica abaixo do teto:
+
+    | Rigor | Confiança | Teto de risco |
+    | --- | --- | --- |
+    | `cautious` | 85% | 0.45 |
+    | `balanced` (padrão) | 70% | 0.50 |
+    | `relaxed` | 55% | 0.60 |
+
+    A política é texto puro, então você começa de um preset e edita:
+
+    ```text
+    # May run without asking
+    - Running tests, linters, type checks, and builds
+    - git status, diff, log
+
+    # Must always ask first
+    - sudo, or anything that changes system-wide state
+    - Anything that reaches the network
+
+    # When in doubt
+    Ask me.
+    ```
+
+    Começa com o **dry run** ligado: o juiz escreve o veredito na chamada, mas quem decide ainda é você. Depois de umas sessões concordando com ele, desliga.
+
+### :lucide-message-circle-question: Questions: pergunta em vez de chutar
+
+Essa é a peça que mais conversa com a tese do post. Em vez de chutar quando falta informação, o modelo te **pergunta**, e cada pergunta vem com opções, um preview do que cada uma vira, e uma linha pra você escrever a sua própria resposta.
+
+![O diálogo de perguntas: duas perguntas em abas, as opções à esquerda, e à direita a descrição e o preview da opção em foco](https://raw.githubusercontent.com/felipeadeildo/pi-harness/main/packages/ask-questions/assets/preview.png){ loading=lazy }
+/// caption
+Duas perguntas em abas, e o preview da opção em foco.
+///
+
+O pulo do gato são as **notas**: ++tab++ escreve uma nota em qualquer opção, escolhida ou não. E é isso que o modelo lê de volta:
+
+```text
+The user answered:
+- Layout: "Which layout should the accounts section use?" → "Tree (Recommended)"
+  note on "Tree (Recommended)": fits how I think
+  note on "Flat list" (not picked): too long with five accounts
+Continue with these answers in mind.
+```
+
+"Muito longo com cinco contas", numa opção que eu **nem escolhi**, diz mais pro modelo do que a escolha sozinha. Isso é gap sendo fechado.
+
+E o diálogo de permissão é **esse mesmo** diálogo por baixo, então os dois têm as mesmas teclas: ++arrow-up++ ++arrow-down++ pra andar, ++enter++ pra escolher, ++tab++ pra nota, ++esc++ pra sair.
+
+### :lucide-monitor: Look: mostra o que está acontecendo
+
+O item 2 da lista. A tela inteira é desenhada em volta dos números que importam enquanto o agente trabalha.
+
+![O pi com o look: o card de início, a faixa com o cronômetro e a última chamada, o editor emoldurado com branch, modelo e contexto, e o rodapé com custo, tokens, cache e as janelas do plano](https://raw.githubusercontent.com/felipeadeildo/pi-harness/main/packages/look/assets/preview.png){ loading=lazy }
+/// caption
+O card de início, e um prompt no meio da resposta.
+///
+
+E toda chamada de tool ganha uma caixa própria (aquela lá de cima, do juiz): o que vai rodar, quem deixou e por quê, o output, e quanto tempo levou.
+
+!!! tip "A tela não dança"
+
+    Não sou o melhor cara de design, mas sei muito bem o que me incomoda numa UI. E o que mais me incomoda é tela **dançando**: um contador sem número tabular, que empurra a linha inteira pro lado toda vez que passa de `9` pra `10`, ou um valor que surge do nada no meio da linha e desloca todo o resto.
+
+    Então aqui é TOC assumido: todo número tem largura fixa, valor que ainda não existe aparece como `–` em vez de brotar depois, e a faixa e o rodapé já nascem ocupando a linha deles. O cronômetro corre e mais nada se mexe.
+
+### :lucide-key-round: Providers: o plano que você já paga
+
+Com um plano Pro ou Max conectado no `/login anthropic`, as requisições do pi contam como extra usage, cobrado por token. Essa peça faz elas saírem do plano, igualzinho às do Claude Code.
+
+!!! warning "Lê as letras miúdas"
+
+    Ela faz isso apresentando o pi pra Anthropic como Claude Code, e usar a assinatura fora do Claude Code pode quebrar os termos da Anthropic. Não quer isso? Desliga a feature no `pi config`. Requisição com API key sai intocada.
+
+E ela guarda **várias contas** por provider. O `/accounts` adiciona usando o próprio login do pi (nada de OAuth meu), ++alt+a++ troca a conta da sessão, e cada uma mostra quanto do plano ainda tem. Quando uma bate no limite, a próxima assume:
+
+```mermaid
+sequenceDiagram
+    participant pi
+    participant W as conta work
+    participant H as conta home
+    pi->>W: requisição
+    W-->>pi: 429, limite atingido
+    Note over pi: accounts.onLimit = ask, switch ou stop
+    pi->>H: a mesma requisição
+    H-->>pi: resposta
+```
+
+Só troca se nada foi mostrado ainda, então um retry nunca repete na sua cara um texto que você já leu.
+
+### :lucide-blocks: O kit, pra quem quer escrever a própria peça
+
+Por baixo de tudo isso tem o [`@adeildo/pi-kit`](https://github.com/felipeadeildo/pi-harness/tree/main/packages/kit). Uma feature é um objeto, e o kit dá a ela settings tipadas, uma aba no ++alt+s++ e um interruptor no `pi config`:
+
+```ts title="subscription.ts"
+import { createApp, defineFeature, matching, setting } from "@adeildo/pi-kit";
+import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+
+export const version = setting({
+	id: "subscription.claudeCodeVersion", // (1)!
+	default: "2.1.280",
+	decoder: matching(/^\d+\.\d+\.\d+$/, "a version like 2.1.280"), // (2)!
+});
+
+export const subscription = defineFeature({
+	id: "subscription",
+	description: "Bill Anthropic OAuth requests to the Claude plan",
+	settings: [version],
+	setup(scope) { // (3)!
+		scope.on("before_provider_headers", (event) => {
+			event.headers["user-agent"] = `claude-cli/${version.get(scope)}`;
+		});
+	},
+});
+
+export default function (pi: ExtensionAPI): void {
+	createApp(pi, { name: "pi-harness" }).use(subscription).build();
+}
+```
+
+1.  O `id` é o caminho da chave no arquivo de settings, que todas as peças compartilham.
+2.  Valor que não decodifica é ignorado, com um aviso dizendo o arquivo e a chave.
+3.  O `scope` é a própria API de extensão do pi, com os erros já prefixados com o nome da feature. Feature desligada nunca roda o `setup`, então não registra nada e não custa nada.
+
+### A lista de reclamações, revisitada
+
+Prometi que ela voltava:
+
+| | O que me deixava puto | Onde o harness resolve |
+| --- | --- | --- |
+| 1 | Editar tudo by default | **Permission** começa no `manual`, e cada modo é uma escolha sua |
+| 2 | Visibilidade truncada | **Look**: cada chamada numa caixa, com quem decidiu, o output e o tempo |
+| 3 | Permissão binária | O `no` leva uma **nota**, e o modelo ainda pode **perguntar** antes de chutar |
+| 4 | Não eram o Claude Code | O diálogo, os modos e o juiz no espírito do Claude Code, em cima de qualquer modelo |
+| 5 | Performance | O pi já é leve, e o look só redesenha uma chamada quando ela muda, com um teste de performance guardando isso |
+
+### O que vem por aí
+
+Hoje o harness ainda é bem vanilla em memória, acesso à web, acesso remoto e multi-agent. É pra lá que ele vai:
+
+- [x] Permissão com nota, modos, _always yes_ em três escopos, e o juiz
+- [x] Perguntas com preview e nota
+- [x] O look: card de início, editor emoldurado, caixa por chamada, rodapé
+- [x] Várias contas, troca no limite, e o plano no rodapé
+- [ ] Um ledger de uso, e um `/usage` com o que o plano diz que sobra do lado do que eu gastei
+- [ ] Estado de sessão, compaction estruturada e memória (no lugar do pi-memory)
+- [ ] Sessões conversando entre si, e subagents com os diálogos de permissão encaminhados pro pai
+- [ ] Busca e leitura na web (no lugar do pi-web-access)
+- [ ] Uma ponte remota e uma web UI, pra aprovar chamada pelo celular com a mesma política
+
+O plano inteiro, com o porquê de cada item, está no [`ROADMAP.md`](https://github.com/felipeadeildo/pi-harness/blob/main/ROADMAP.md).
+
+## Considerações
+
+Antes que alguém venha: eu não me acho o dono da cocada preta. Faço isso porque são as minhas opiniões. Não gostou? Discorda? Faz um fork, faz melhor, eu não tô nem aí. Ou melhor: abre um PR lá kkkkk.
+
+A ideia aqui foi mostrar como eu enxergo essas novidades de IA, e como várias delas são bem slop. Lembra da skill? Um prompt em `.md` hospedado em algum lugar. Uma forma legal de dar ++ctrl+c++ ++ctrl+v++, grande coisa.
+
+Também não sou portador de todo o conhecimento do mundo, e tô bem longe do estado da arte dos "workflows agênticos galácticos do improvement loop dos deuses". Tem muita coisa que eu ainda não sei direito como funciona. Mas o que eu uso tem me servido muito bem até aqui.
+
+Só tem uma coisa que não pode quebrar:
+
+!!! danger "A responsabilidade é sua"
+
+    Fazer algo de qualidade não é responsabilidade da IA. **É sua.** Se você não sabe, numa camada boa o bastante, que caralhos está acontecendo na sua aplicação, na arquitetura, no que você está desenvolvendo, a chance de dar merda é enorme. E não por incapacidade da IA: por incapacidade sua. É skill issue.
+
+No fundo, é o gap de novo. Ele é seu de fechar. O harness só deixa isso mais barato.
+
+E fica o convite: quem quiser colaborar com ideias, chega junto. A proposta é fazer algo bom de verdade, com carinho, pensando na experiência de cada feature. Não é ter feature por ter: é implementar coisa que **nós mesmos** usaríamos no dia a dia, saca? Bem fechado, com começo, meio e fim.
+
+É isso. Pra cima! Bora, biu!
+
+[^one-file]: Um programa inteiro num arquivo só: sem módulo, sem pacote, sem separar responsabilidade. Tudo de cima pra baixo, num `script.py` gigante que você roda com `python script.py` e reza.
+
+[^fgv]: Sorry, FGV. Em minha defesa, até então não tinha nenhuma regra sobre usar IA :D
+
+[^json]: Hoje a "sintaxe" é um JSON com schema, e os modelos passam por um pós-treinamento só pra escrever esse JSON direitinho. Fica bem mais robusto, mas a ideia é a mesma: o modelo escreve, o harness executa.
+
+*[LLM]: Large Language Model: o modelo que completa texto.
+*[LLMs]: Large Language Models: os modelos que completam texto.
+*[TUI]: Terminal User Interface: interface desenhada dentro do terminal.
+*[TUIs]: Terminal User Interfaces: interfaces desenhadas dentro do terminal.
+*[CLI]: Command-Line Interface: um programa que você usa pela linha de comando.
+*[CLIs]: Command-Line Interfaces: programas que você usa pela linha de comando.
+*[IDE]: Integrated Development Environment, tipo o VS Code.
+*[AST]: Abstract Syntax Tree: a árvore que o parser monta a partir do código.
+*[MCP]: Model Context Protocol: um protocolo pra expor ferramentas a um modelo.
+*[omp]: Oh My Pi, o fork opinionated do pi.
+*[sinapses]: Os pontos de contato entre neurônios, por onde o sinal passa de um pro outro. A memória fica guardada na força dessas conexões.
