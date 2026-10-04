@@ -222,12 +222,12 @@ Lindo!
 
 ### Onde que essa galera perdeu a linha?
 
-Note que, na pratica, um LLM nao precisa de 2 ferramentas pra se virar:
+Note que, na pratica, um LLM nao precisa de mais que 2 ferramentas pra se virar:
 
 - read
 - edit
 
-passa ano, entra ano e nao conseguimos fugir do input/output, cara.
+> joke: passa ano, entra ano e nao conseguimos fugir do input/output, cara.
 
 read(file_path) -> file content
 read(folder_path) -> list of folders and files inside the path
@@ -246,26 +246,92 @@ Do nada, 10001 ferramentas, tools, workflows, skiils, e num sei oq la... mano, t
 
 ## Onde Claude Code tem me perdido
 
-brief: falar sobre auto mode, permissoes de quebrando, system prompts enorme, ferramentas desnecessarias.
+Claude Code por um bom tempo tem sido para mim o "estado da arte" de CLI Coding Harness, introduzindo varios conceitos legais e, para alem de tudo, que realmente sao uteis e dao um bom controle ao usuario.
+
+Porem, por serem uma empresa privada, com objetivos de controlar o mercado, tornaram o harness quase que impossivel de ser executado sem ser em cima de um modelo proprietario... Otimas funcionalidades... mas que so funcionam bem se o seu llm provider for anthropic ou gateways de anthropic.
+
+Isso se da por varios motivos... desde system prompts do tamanho de uma biblia que tornam a inicializacao de qualquer sessao num modelo local numa maquina regular, simplesmente muito demorado... ate assinatura de funcoes dificeis de serem representadas a nao ser que seu LLM tenha tido uma camada de pos treinamento especifico para aquele use-case; 
+
+Eventualmente, foi introduzido o auto-mode que, sinceramente, nao eh algo tao util assim, pq os criterios de aceitacao automatica eh proprietario da anthropic... e nao necessariamente eles fazem um bom trabalho com isso.
+
+Dito isso, a maior dificuldade eh rodar coisas diferentes com a carcaca do claude code. Apenas isso.
+
+> Sim, eu sei que tem como eu definir profiles com endpoints diferentes, inclusive, eu desenvolvi meu [gestor de contas claude](https://github.com/felipeadeildo/claude-code-profiles) fazendo uso dessa funcionalidade.
+
 
 ## Falling in love: pi.dev
 
-brief: citar Bruno Assis que me apresentou pi.dev, breve experiencia, e falar que eu queria algo opinionated on top of, e que eventualmente descobri o omp.sh e coisas que eu gostei / nao gostei e gostaria
 
-### omp
-...
+Na minha busca por alternativas, passei por `opencode`, `opencode2`, `aider`, `hermes`, `fx.sh`, etc etc. Inclusive cheguei ate mesmo a revisitar o `codex` (grandes improvements, btw).
+
+Infelizmente, todos eles - por algum fucking motivo - tinha uma pre disposicao a assumir que eu quero fazer coisas "one-shot" sem "human-in-the-loop" dando feedbacks, respondendo questoes ou permitindo/negando coisas...
+
+Em geral, coisas que eu observei e que me deixavam puto (nao sao todos, mas compartilham da grande maioria dessas "deficiencias")
+
+1. Iniciavam com a permissao de "editar tudo" by default, o que eu acho muito ousado.
+2. Visibilidade do que estava acontecendo meio truncado: qual arquivo, oq por que, thinking, decisao.
+3. Dialogo de permissao se restringia a "yes"/"no", sem feedback, sem improvement, sem nada do tipo... entao se eu negasse uma chamada de tool, o agente simplesmente receberia um output: "the call tool was denied by the user", apenas isso, sem follow up, sem nada.
+4. Nao era o claude code hahaha, funcionalidades de um lado bem implementadas, de outro meio bugadas.
+5. Performance.
+
+
+Eventualmente, um amigo - [Bruno Assis](https://www.linkedin.com/in/brunoassis88/) - me apresentou o [pi.dev](https://pi.dev). Foi amor a primeira vista...
+
+Minimalista, extensivel, direto ao ponto, uma pagina em branco prestes a ser pintada!
+
+Era algo mais proximo de outras tui's e com fortes opinioes sobre oq eh uma tool!
+
+
+### I dont have time (yet)
+
+Apesar disso, fazer um bom harness requer tempo, vamos ver o que a comunidade fez em cima disso... e fui introduzido ao [Oh My Pi](https://omp.sh) - nao tinha nome melhor para uma versao opinionated hahaha - simplesmente perfeito, uma otima TUI, bem bonito, configuravel, com um monte de coisa realmente util... mas ainda falhava em algumas coisas, como por exemplo, a forma de dar feedback ao aceitar/negar execucao de alguma tool e nao haver policitas de "accept edits" / "manual mode", era 8 ou 80.. nao havia meio termo configuravel.
+
+Usei por um bom tempo, eh realmente um otimo trabalho... mas tem uma pegadinha: Nao eh o pi! Eh um fork do pi atualizado com a main stream... eh tipo o que o archlinux eh para o kernel linux. Isso nao eh um problema, so pra ter em mente isso.
 
 ### bare pi + extensions (not a fork)
-brief: falar um pocuo das experiencias com extensoes, coletando, como que foi
+
+Eventualmente, apos um overhead de funcionalidades do omp, descobrindo oq era possivel fazer, voltei para o pi e comecei a dar uma olhada na lista de extensoes.
+
+Algumas a quem eu devo prestar meus devidos respeito sao:
+
+1. [pi-open-tui](https://github.com/OldSuns/pi-open-tui): uma interface muito limpa on top of pi, e bonita, configuravel tbm.
+2. [rpic-ask-user-question](https://github.com/juicesharp/rpiv-mono/tree/main/packages/rpiv-ask-user-question): uma interface bem "claude code"-like para permitir que o LLM te faca perguntas para fechar os _gaps de informacao_ e tomada de decisao.
+3. [pi-claude-max](https://github.com/bradennss/pi-claude-max): basicamente interceptaca a chamada de API stream da anthropic para injetar headers que se passam pelo "claude code cli" com o objetivo da API consumir minha subscription usage ao inves de usar extra usage. - Novamente, anthropic, pq? -
+4.  [pi-multiprovider](https://github.com/monotykamary/pi-multiprovider): objetivo parecido com o meu [claude code profiles](https://github.com/felipeadeildo/claude-code-profiles) que permite configurar mais de uma conta para um determinado provider. Tipo, Anthropic pessoal + Anthropic Ranqia de forma simples.
+5. [pi-web-access](https://github.com/nicobailon/pi-web-access): dar ao LLM ferramenta de pesquisa / leitura da internet + summary;
+6. [pi-memory](https://github.com/jayzeng/pi-memory): "gives it a memory: durable facts and decisions, a running daily log, and a scratchpad of things to come back to — all as plain markdown files you can read, edit, and commit. With optional qmd it also gets keyword, semantic, and hybrid search across everything it has ever remembered." (direto do README);
+
+Entre outras bem legais!
+
+Foi um mundo novo!
 
 ### a extensao que faltava: pi-ask-permission [like claude code does]
-...
+
+Eventualmente, vi que faltava uma extensao ao meu gosto... a experiencia que eu queria aparentemente so ia existir se eu a criasse. Entao nasceu a [pi-ask-permission _(deprecated, ok?)_](https://pi.dev/packages/pi-ask-permission). Basicamente, antes de fazer chamada de tools nao read-only, me pedir permissao, e me dar uma interface parecida com isso daqui:
+
+![img](https://raw.githubusercontent.com/felipeadeildo/pi-harness/main/packages/ask-permission/assets/preview.png)
+
+Eventualmente, tbm cheguei a implementar um judge logo apos o lancamento do [Jev @ Typesafe](https://typesafe.ai/blog/introducing-system-one-models-and-jev), para dar uma avaliada no na tool call (asinatura + argumentos), ficaria algo assim:
+
+![img](https://raw.githubusercontent.com/felipeadeildo/pi-harness/main/packages/look/assets/call.png)
 
 
 ### ok, vamos unificar... e adeildo disse: haja harness opinionated!
-...
 
-### looking and feel!!
+Infelizmente, nem tudo sao flores, eventualmente isso foi virando um frankenstein de extensoes de terceiros... nao eh algo ruim, mas algumas coisas pequenas incomodavam... abri PR's para resolver algumas delas, inclusive... mas sao a MINHA opiniao contra a dos mantenedores dessas extensoes... E o tempo de resposta nao era tao rapido quando eu gostaria para ter a ultima versao das coisas na minha maquina.
+
+Resolvi entao reimplementar todas num monorepo.
+
+Compartihando estado, padrao de UI, algo bem parecido com o que o OMP se propoe a fazer, porem, sem virar um fork.
+
+Entao nasceu o [@adeildo/pi-harness](https://github.com/felipeadeildo/pi-harness) onde eu exponho tudo que eu gostaria e uso no meu dia a dia, sao minhas opinioes sobre como essas ferramentas deveriam ser e parecer... a experiencia que eu como desenvolvedor gostaria de ter ao montar um LLM qualquer!
+
+![img](https://raw.githubusercontent.com/felipeadeildo/pi-harness/main/packages/harness/assets/conversation.png)
+
+Alem de: tem que ser relativamente bonito, elegante, confortavel e intuitivo, nada de 10001 comandos para fazer coisas distintas, uma tela d configuracao unificada, poucos passos e vc esta PRONTO para comecar a usar, sem problema nenhum.
+
+### Implementado so far e ideias para o futuro!
+
 ...
 
 ## Consideracoes
