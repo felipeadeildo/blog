@@ -1,5 +1,5 @@
 ---
-draft: true
+draft: false
 date:
   created: 2026-10-03
 slug: yes-another-agent-harness
@@ -7,9 +7,13 @@ description: Do script que resolvia exercício da FGV com GPT-3.5 até um harnes
 categories:
   - dev
 tags:
-  - pi.dev
-  - project
-  - cli
+  - opinion
+  - pi-harness
+  - pi
+  - claude-code
+  - coding-agents
+  - tool-calling
+  - llm
 closing: See you next time!
 ---
 

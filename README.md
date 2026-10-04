@@ -31,7 +31,8 @@ slug: my-post
 categories:
   - dev
 tags:
-  - something
+  - story
+  - nextjs
 closing: Until next time,
 ---
 
@@ -45,6 +46,35 @@ The first paragraph is the excerpt in the feed.
 `draft: true` shows the post under `serve` and leaves it out of the build.
 Admonitions, content tabs, code annotations, mermaid, footnotes, abbreviations
 and keys all work; the wiki pages use most of them.
+
+### Categories and tags
+
+**Categories** say which part of my life a post comes from. The list is closed,
+and a post takes one or two:
+
+| Category  | For                                              |
+| --------- | ------------------------------------------------ |
+| `dev`     | software, code and the tools I build with        |
+| `desktop` | Linux, niri and the rest of the machine's setup  |
+| `life`    | everyday life, whatever isn't code               |
+| `ranqia`  | work at Ranqia, usually alongside `dev`          |
+
+**Tags** say what the post is about. They are open, but every tag is one of
+four kinds, in this order in the front matter:
+
+1. **The kind of post**, exactly one: `story` (something that happened),
+   `tutorial` (how to do something), `opinion` (what I think and why) or
+   `postmortem` (what broke and what I learned).
+2. **My project**, when the post is about one: `pi-harness`, `grace`.
+3. **Technologies**, by the name the project gives itself: `nextjs`,
+   `react-router`, `claude-code`, `pi`.
+4. **Concepts**, the idea regardless of the tool: `ssr`, `tool-calling`,
+   `coding-agents`.
+
+Every tag is lowercase kebab-case and in English, whatever the language of
+the post. Reuse a tag before inventing one: `grep -rh -A8 '^tags:'
+docs/log/posts` lists the ones in use. Somewhere between three and eight tags
+per post is plenty: tag what the post is about, not every tool it mentions.
 
 ## The /whoami map
 
