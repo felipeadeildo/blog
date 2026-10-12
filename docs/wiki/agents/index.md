@@ -51,7 +51,7 @@ The ones I changed in `~/.pi/agent/settings.json`:
 
 ## pi-harness
 
-**I wrote this one.** Four pieces on top of Pi, no fork. ++alt+s++ opens the settings of all of them, and `pi config` turns any of them off.
+**I wrote this one.** Seven pieces on top of Pi, no fork. ++alt+s++ opens the settings of all of them, and `pi config` turns any of them off.
 
 ### permission
 
@@ -83,17 +83,39 @@ Mine runs on `relaxed` rigor (55% sure, risk up to 0.60) and gives up after 2 se
 Ask me.
 ```
 
-Calls outside the project go to the judge like any other, since I work across repos a lot.
+Calls outside the project go to the judge like any other, since I work across repos a lot. Beside my last message, the judge reads the session's [tasks](#tasks), but only the parts that came from my words. Instructions inside a file the agent read never count as my intent.
 
 ### questions
 
-When something could go two ways, the agent asks instead of guessing: options, a preview of each, and a row for my own answer. ++tab++ leaves a note on any option, picked or not. The permission dialog is this same dialog, with the same keys.
+When something could go two ways, the agent asks instead of guessing: options, a preview of each, and a row for my own answer. ++tab++ leaves a note on any option, picked or not, and ++shift+down++ or the wheel scrolls a long preview. The permission dialog is this same dialog, with the same keys.
 
 ![The question dialog: two questions as tabs, the options on the left, and on the right the description and the preview of the focused option](../../assets/images/agents/questions.webp)
 
+While the agent writes the questions, the chat lists them as they arrive, so I can start thinking before the dialog opens. Once I answer, each answer and each note stays in the chat under its question.
+
+### tasks
+
+What the session is doing, what it did and with what result, what waits on me, and what we decided. A small model keeps the list. My messages open and continue tasks, and at the end of each run the model gives every open task a verdict, pointing at the line where the agent reported the work. ++alt+t++ opens the list, ++x++ marks a task done, and the title becomes the session's name in `/resume`.
+
+![The tasks over the chat: one under way, one waiting on me to create a secret in production, two queued, four done with their results, and one decision](../../assets/images/agents/tasks.webp)
+
+It replaced a single "goal" that left finished work marked as "later". After a week of my sessions, 87 tasks sat in "later", and 72 of them went there because I sent a message while the agent was still working. Only the task under way could close at the end of a run, so the rest stayed open.
+
+### compact
+
+Long sessions get expensive because every request reads the whole context again. Past 150k tokens, tool output older than the last 10 turns becomes one line that names the call it came from, so the agent can run it again. On Claude, Anthropic clears the old output on its side instead, which keeps the agent's thinking. A week of my sessions, replayed through it, costs 27 to 32% less, counting the cache each clear rewrites.
+
+![A prune's line in the chat: 181 old tool outputs hidden, 705k to 250k tokens, what rewriting the cache costs and in how many requests it pays back](../../assets/images/agents/compact.webp)
+
+When Pi compacts anyway, Haiku writes the summary with Pi's own prompt, and the tasks and my last words go on top as they are. The README has [the research and the numbers](https://github.com/felipeadeildo/pi-harness/tree/main/packages/compact#why-this-way).
+
+### skill calls
+
+I call skills like `/skill:simplify` and `/skill:unslop` anywhere in a message, several at once. The model reads each skill in full, and the chat shows a small chip where I typed it.
+
 ### look
 
-Pi's screen, drawn around what matters while the agent works: the start card, a frame around every tool call, a stopwatch above the editor, the branch, the mode and the model on the editor's borders, and a footer with the cost and how much of the Claude plan is left. It replaced pi-open-tui, and nothing on it dances: every number has a fixed width.
+Pi's screen, drawn around what matters while the agent works: the start card, a frame around every tool call, a stopwatch above the editor, the branch, the mode and the model on the editor's borders, the task under way, and a footer with the cost and how much of the Claude plan is left. It replaced pi-open-tui, and nothing on it dances: every number has a fixed width.
 
 ### providers
 
@@ -126,13 +148,20 @@ Installed with [skills](https://github.com/vercel-labs/skills): `npx skills add 
 | `frontend-design` | [anthropics/skills](https://github.com/anthropics/skills) | interfaces with a real visual direction |
 | `web-design-guidelines` | [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills) | reviewing a UI for accessibility |
 | `tui-design` | [hyperb1iss/hyperskills](https://github.com/hyperb1iss/hyperskills) | terminal interfaces. The look got a lot of it |
+| `design-taste-frontend` | [leonxlnx/taste-skill](https://github.com/leonxlnx/taste-skill) | landing pages and redesigns that don't look templated |
+| `shadcn` | [shadcn-ui/ui](https://github.com/shadcn-ui/ui) | shadcn/ui components and registries |
+| `install-anti-slop` | [dmmulroy/anti-slop](https://github.com/dmmulroy/anti-slop) | Oxlint rules that catch AI-looking code |
+| `ce-simplify-code` | [everyinc/compound-engineering-plugin](https://github.com/everyinc/compound-engineering-plugin) | simplifying settled code before a review |
+| `doc-coauthoring`, `documentation` | [anthropics/skills](https://github.com/anthropics/skills), [anthropics/knowledge-work-plugins](https://github.com/anthropics/knowledge-work-plugins) | specs, decision docs and runbooks |
+| `documentation-writer` | [github/awesome-copilot](https://github.com/github/awesome-copilot) | docs organized the [Diátaxis](https://diataxis.fr/) way |
+| `wrangler`, `durable-objects`, `workers-best-practices` and 13 more | [cloudflare/skills](https://github.com/cloudflare/skills) | Workers, Durable Objects and the rest of Cloudflare |
 | `find-skills` | [vercel-labs/skills](https://github.com/vercel-labs/skills) | finding other skills |
 
 ## What's still missing
 
 Everything here assumes one session, one terminal, and me in front of it. Next on the [roadmap](https://github.com/felipeadeildo/pi-harness/blob/main/ROADMAP.md):
 
-- **Sessions that talk**, passing what one found to another.
+- **Sessions that talk**, passing what one found to another. Each session already keeps its [tasks](#tasks) and decisions where another one can read them.
 - **My phone**, to follow a session and approve a call from anywhere, under the same policy, probably over [Tailscale](../workbench/index.md#command-line-tools).
 - **My own memory and web access**, so pi-memory and pi-web-access share state with the rest of the harness.
 
